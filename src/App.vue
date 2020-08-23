@@ -47,7 +47,7 @@ export default {
       return this.$store.state.TabBar.is_jx_TabBar;
     },
     userInfo(){
-      return this.$store.state.userInfo != null ? this.$store.state.userInfo.id : null
+      return this.$store.state.userInfo.id
     },
     user() {
       return ( this.userInfo != "" &&this.userInfo != null && this.userInfo != undefined );
