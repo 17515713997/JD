@@ -35,7 +35,7 @@ const state = {
   temp:null,
   totalNum:0,//支付数量
   totalPayment:0,//支付总价
-  ShoppingAddress:'山东菏泽曹县',   //配送地址
+  ShoppingAddress:'辽宁省葫芦岛市绥中县',   //配送地址
   city:null,
   SKnavigation:null,//用于记录tabbar的上此 路由路径
   ShopCartMoneyAll:0,//记录购物车所有商品价钱总和

@@ -14,9 +14,9 @@
         <div>
           <!-- <button>请添加地址</button> -->
           <div>
-            <p>王金帅</p>
-            <p>175****3997</p>
-            <p>山东菏泽曹县</p>
+            <p>张伟建</p>
+            <p>176****9259</p>
+            <p>辽宁省葫芦岛市绥中县</p>
           </div>
         </div>
         <div class="el-icon-arrow-right" style="flex:1;line-height:68px;"></div>
