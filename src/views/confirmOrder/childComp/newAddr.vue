@@ -53,7 +53,7 @@
             @click="setTakeover(item,index)"
             :class="{tagactive:active == index}"
           >{{item}}</button>
-          <button @click="addTakeoverTag" v-if="takeoverArr.length != 4" style="width: 60px;height: 35px;">+</button>
+          <el-button @click="addTakeoverTag" v-if="takeoverArr.length != 4" style="width: 60px;height: 35px;">+</el-button>
           <span class="el-icon-edit-outline" v-if="takeoverArr.length==4" @click="xiugai"></span>
         </div>
       </div>
@@ -147,8 +147,13 @@ export default {
   watch: {},
   methods: {
     //1.对地址标签添加新值
+    // addTakeoverTag() {
+    //   this.takeoverArr.push("aaaaa");
+    // },
     addTakeoverTag() {
-      this.takeoverArr.push("aaaaa");
+        this.$alert('<strong>这是 <i>HTML</i> 片段</strong>', 'HTML 片段', {
+          dangerouslyUseHTMLString: true
+        });
     },
     //2.对 地址标签添加的新值 进行修改
     xiugai() {},
