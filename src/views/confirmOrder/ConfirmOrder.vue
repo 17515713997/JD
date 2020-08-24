@@ -49,34 +49,6 @@
               </div>
             </div>
           </div>
-        <!-- <div class="box3">
-          <span style="float:left;display: block;width:40%;text-align:left;padding-left: 10px;">配置</span>
-          <span style="float:right;display: block;width:50%;text-align:right;font-size:12px;color:#ccc">快速运输</span>
-        </div> -->
-       <!-- <div class="box4">
-        <span style="float:left;display: block;width:40%;text-align:left;padding-left: 10px;">退还无忧</span>
-        <span style="float:right;display: block;width:50%;text-align:right;font-size:12px;color:red">商家赠送</span>
-      </div> -->
-       <!-- <div class="box5" style="border:none">
-        <span style="float:left;display: block;width:40%;text-align:left;padding-left: 10px;">店铺备注</span>
-        <span style="float:right;display: block;width:50%;text-align:right;font-size:12px;color:#ccc">商品留言</span>
-      </div> -->
-       
-
-      <!-- <div class="emlis">
-      <div class="emlis1">
-        <span style="float:left;display: block;width:40%;text-align:left;padding-left: 10px;">发票信息</span>
-        <span style="float:right;display: block;width:50%;text-align:right;font-size:12px;color:#ccc">个人不开发票</span>
-      </div>
-      <div class="emlis2">
-        <span style="float:left;display: block;width:40%;text-align:left;padding-left: 10px;">礼品卡</span>
-        <span style="float:right;display: block;width:50%;text-align:right;font-size:12px;color:#ccc">无可用</span>
-      </div>
-      <div class="emlis3" style="border:none">
-        <span style="float:left;display: block;width:40%;text-align:left;padding-left: 10px;">红包</span>
-        <span style="float:right;display: block;width:50%;text-align:right;font-size:12px;color:#ccc">无可用</span>
-      </div>
-    </div> -->
       <div class="msgorder2">
         <div>
            商品金额:<span>￥{{list.money_now}}</span>
