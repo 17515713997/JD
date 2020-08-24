@@ -3,35 +3,22 @@
     <!-- 注意问题：在确认订单页面时可以更改商品数量的
     如果有修改数据，记得去找修改购物车数据接口去修改-->
     <scroll ref="confimscroll" class="confimscroll">
-      <nav-bar>
-        <div slot="left" @click="$router.go(-1)">
+       <nav-bar>
+        <div slot="left">
           <i class="el-icon-arrow-left"></i>
         </div>
-        <div slot="center" class="tab-center">确认订单</div>
+        <div slot="center">确认订单</div>
+        <div slot="right"></div>
       </nav-bar>
-
-      <div class="shopnamemess" v-if="$store.state.userinfo==null">
-        <div>
-          <!-- <button>请添加地址</button> -->
+      <div class='address'>
+        <div v-if='$store.state.userInfo == null'>
+          <button @click="$store.commit('ROUTERTO','/newAddr/0')">+ 请添加地址</button>
+        </div> 
+        <div v-else class='selectAddr' @click="$store.commit('ROUTERTO','/allAddr')">
+          <h2>{{'王金帅'}} <span>{{'17515713997' | changeTel}}</span></h2>
           <div>
-            <p>张伟建</p>
-            <p>176****9259</p>
-            <p>辽宁省葫芦岛市绥中县</p>
-          </div>
-        </div>
-        <div class="el-icon-arrow-right" style="flex:1;line-height:68px;"></div>
-        <div class="p">
-          <p></p>
-        </div>
-      </div>
-      <div class="shopnamemess" @click="goaddress" v-else>
-        <div>
-          <strong>21345 3456789</strong>
-          <p>{{$store.state.userinfo}}</p>
-        </div>
-        <div class="el-icon-arrow-right" style="flex:1;line-height:68px;"></div>
-        <div class="p">
-          <p></p>
+            山东菏泽曹县
+          </div> 
         </div>
       </div>
 
@@ -62,22 +49,21 @@
               </div>
             </div>
           </div>
-        <div class="box3">
+        <!-- <div class="box3">
           <span style="float:left;display: block;width:40%;text-align:left;padding-left: 10px;">配置</span>
           <span style="float:right;display: block;width:50%;text-align:right;font-size:12px;color:#ccc">快速运输</span>
-        </div>
-       <div class="box4">
+        </div> -->
+       <!-- <div class="box4">
         <span style="float:left;display: block;width:40%;text-align:left;padding-left: 10px;">退还无忧</span>
         <span style="float:right;display: block;width:50%;text-align:right;font-size:12px;color:red">商家赠送</span>
-      </div>
-       <div class="box5" style="border:none">
+      </div> -->
+       <!-- <div class="box5" style="border:none">
         <span style="float:left;display: block;width:40%;text-align:left;padding-left: 10px;">店铺备注</span>
         <span style="float:right;display: block;width:50%;text-align:right;font-size:12px;color:#ccc">商品留言</span>
-      </div>
-        </div>
-      </div>
+      </div> -->
+       
 
-      <div class="emlis">
+      <!-- <div class="emlis">
       <div class="emlis1">
         <span style="float:left;display: block;width:40%;text-align:left;padding-left: 10px;">发票信息</span>
         <span style="float:right;display: block;width:50%;text-align:right;font-size:12px;color:#ccc">个人不开发票</span>
@@ -90,13 +76,13 @@
         <span style="float:left;display: block;width:40%;text-align:left;padding-left: 10px;">红包</span>
         <span style="float:right;display: block;width:50%;text-align:right;font-size:12px;color:#ccc">无可用</span>
       </div>
-    </div>
+    </div> -->
       <div class="msgorder2">
         <div>
-           商品金额
+           商品金额:<span>￥{{list.money_now}}</span>
         </div>
-        <div>运费</div>
-        <div>实付金额</div>
+        <div>运费:0</div>
+        <div>实付金额<span>￥{{list.money_now}}</span></div>
         <div style="margin:10px">
           <el-button
             type="primary"
@@ -112,12 +98,7 @@
             :modal="false"
             :show-close="false"
           >
-            <img
-              style="display: block;
-    width: 50px;
-    height: 50px;
-    margin: 5px auto 10px;"
-            />
+            <img style="display: block; width: 50px; height: 50px;margin: 5px auto 10px;" />
             <span>是否确认使用货到付款提交订单</span>
             <div>货到付款订单总价</div>
             <div>含货到付款运费：免运费</div>
@@ -130,16 +111,8 @@
 
           <el-button type="primary" style="display:block;width:100%;" @click="confirm_order">在线支付</el-button>
         </div>
-
-        <img
-          alt
-          style="display: block;
-    width: 100px;
-    height: 20px;
-    margin: 20px auto 40px auto;"
-        />
-
-        <!-- <div>此订单不支持以下支付方式</div> -->
+      </div>
+       </div>
       </div>
     </scroll>
   </div>

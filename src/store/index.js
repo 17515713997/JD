@@ -15,9 +15,9 @@ const state = {
   },
   userInfo:null,
   // userInfo:{
-    // defaddr:{id:1,user_id:'6',tel:"电话",addr:'省,市,县(乡,街道),具体地址',name:'接收人',default:1},
-    // defaddr:null,
-    // id:'6',
+  //   defaddr:{id:1,user_id:'15',tel:"电话",addr:'省,市,县(乡,街道),具体地址',name:'接收人',default:1},
+  //   // defaddr:null,
+  //   id:'15',
   //   email:'',
   //   name:'',
   //   qq:'',
@@ -35,7 +35,7 @@ const state = {
   temp:null,
   totalNum:0,//支付数量
   totalPayment:0,//支付总价
-  ShoppingAddress:'辽宁省葫芦岛市绥中县',   //配送地址
+  ShoppingAddress:'山东菏泽曹县',   //配送地址
   city:null,
   SKnavigation:null,//用于记录tabbar的上此 路由路径
   ShopCartMoneyAll:0,//记录购物车所有商品价钱总和

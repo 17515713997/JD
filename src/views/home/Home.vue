@@ -121,19 +121,15 @@ export default {
     this.getFeature(1);
     this.getGoodsMax("recommend");
     this.getGoodsMax("news");
-
-    if (!this.$store.state.userInfo) {
-      this.auto_code();
-    }
-    // if (this.$store.state.userInfo) {
-    //   this.getShopCart(this.$store.state.userInfo.id);
-    // }
   },
   activated() {
     //在组件激活的时候，调整滚动条的位置。
     this.$refs.homeScrollCom.scroll.scrollTo(0, this.saveY, 0);
     this.$refs.homeScrollCom.scrollTo1(0, this.saveY, 0);
     this.$refs.homeScrollCom.refreshScroll();
+    if (!this.$store.state.userInfo) {
+      this.auto_code();
+    }
   },
   deactivated() {
     //在组件离开的时候，记录滚动条的位置

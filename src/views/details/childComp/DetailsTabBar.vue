@@ -46,9 +46,9 @@ export default {
     shopCartLength(){
       return this.$store.state.shopCartLength
     },
-    // userInfo(){
-    //   return this.$store.state.userInfo.id
-    // },
+    userInfo(){
+      return this.$store.state.userInfo.id
+    },
     user(){
       return this.userInfo!= "" && this.userInfo != null && this.userInfo != undefined
     }

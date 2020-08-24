@@ -142,7 +142,7 @@
         <router-link to='/area_code' tag="span">
           {{area_code}}
           <span class="el-icon-arrow-down"></span>
-        </router-link>>
+        </router-link>
         <el-input placeholder="请输入手机号" v-model="phone" clearable></el-input>
       </div>
       <input
@@ -201,12 +201,11 @@ export default {
   name: "",
   data() {
     return {
-      show: true,//模态框是否显示
       phone: "",
       phone_area_code: null, //国际区号
       regTel: true,
       // area_code:100,
-      warning:false,  //手机号可以注册时，弹出框显示
+      warning:false,  //手机号可以注册时，弹出框显示      
     };
   },
   components: {
@@ -216,6 +215,9 @@ export default {
   computed: {
     area_code(){
       return this.$store.state.area_code
+    },
+    show(){
+      return this.$store.state.registreDialogShow
     }
   },
   watch: {
@@ -266,33 +268,20 @@ export default {
     },
     checkDialog(val) {
       if (val == "ok") {
-        this.show = false;
+        //此处改变的是状态管理内的值，所以在页面开来的时候，需要把值重新赋值为true
+        this.$store.state.registreDialogShow = false;
         return;
       }
       this.$router.go(-1);
     },
-   
   },
-  created() {
-    //创建
-    if(this.$route.params.code != 0 ){
-      this.show = false;
-      // this.$route.path = '/register/0'
-      // 当前页面中的区号，要被传递过来的区号替换
-      // this.area_code = this.$route.params.code
-    }
-    // else{
-    //   this.area_code = 86
-    // }
-  },
-  activated() {
-    //激活
-  },
-  deactivated() {
-    //未激活
-  },
-  mounted() {
-    //渲染
+  beforeRouteLeave (to, from, next) {
+    // ...
+    console.log(to.path);
+    //离开页面的时候，需要把 registreDialogShow 重新赋值为true 下次打开页面的时候，协议显示
+    this.$store.state.registreDialogShow = true    
+    if(to.path == '/area_code') this.$store.state.areacodeHistory = from.path
+    next()
   },
   filters: {
     regPhone(val) {

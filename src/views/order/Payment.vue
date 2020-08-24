@@ -51,18 +51,6 @@
           <span style="flex:5;">打白条</span>
           <el-radio v-model="radio" label="开通白条并支付"></el-radio>
         </div>
-
-        <!-- <div>
-          <span style="flex:1">分期方式</span>
-          <span style="flex:1;text-align:right;">应还总额</span>
-        </div> -->
-        <!-- <ul>
-          <li>不分期</li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-        </ul>-->
         <div>
           <img
             src="../../assets/imgg/pay3.png"
@@ -154,9 +142,6 @@
     height: 24px;margin-right:8px;float:left;background-size:100%;"
             alt
           />
-          <!-- <div
-            style="flex:5;display:flex;margin-right:-18px;flex-wrap:wrap;"
-          >-->
           <span style="flex:5">
             <div>微信支付方式</div>
             <div style="padding-bottom:8px;">仅安装微信6.0.2及以上版本客户端使用</div>
@@ -194,7 +179,6 @@ export default {
   },
   created() {
     this.order_id = this.$route.params.orderid;
-    console.log(this.$route);
     this.getpathmentorder();
   },
   activated() {},
@@ -203,13 +187,14 @@ export default {
   methods: {
     getpathmentorder() {
       getOrderbyOrderId(this.order_id).then((res) => {
-        console.log(this.order_id)
+        // console.log(this.order_id)
         if (res.code != 200) {
           // 弹出对话框---获取订单数据失败
           // 跳转页面
           // this.$router.push('/profile')
         }
         this.goods = res.data;
+        console.log(this.goods)
         this.goods.forEach((item) => {
           this.moneyall += item.money_now * item.num;
         });

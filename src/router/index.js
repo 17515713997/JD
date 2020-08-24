@@ -14,7 +14,9 @@ const Details = () => import('views/details/Details')
 const Login = () => import('views/login/Login')
 const Register = () => import('views/register/Register')
 //确认订单
-const ConfirmOrder = () => import('views/order/ConfirmOrder')
+const ConfirmOrder = () => import('views/confirmOrder/ConfirmOrder')
+const AllAddr = () => import('views/confirmOrder/childComp/allAddr')
+const NewAddr = () => import('views/confirmOrder/childComp/newAddr')
 //订单
 const Order = () => import('views/order/Order')
 //支付
@@ -93,8 +95,8 @@ const routes = [
       title: "注册"
     },
     component: Register,
-    children:[]
   },
+  //国际区号接口
   {
     path:'/area_code',
     component:()=> import('views/area_code/AreaCode')
@@ -121,6 +123,20 @@ const routes = [
       title: "确认订单"
     },
     component: ConfirmOrder
+  },
+  {//所有地址
+    path: '/allAddr', 
+    meta:{
+      title: "所有地址"
+    },
+    component: AllAddr
+  },
+  {//添加地址  修改配送地址
+    path: '/newAddr/:code',  // 0 新增         >0 修改配送地址
+    meta: {
+      title: "添加地址"
+    },
+    component: NewAddr
   },
   {//支付页面 
     path: "/payment/:order_id",

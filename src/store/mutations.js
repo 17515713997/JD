@@ -109,8 +109,12 @@ export default {
   },
   [types.SET_USERINFO](state,payload) {
     console.log(payload);
+    state.userInfo = {}
     let path = window.location.origin + '/jd'
-    state.userInfo = payload.data.user;
+    // this.$store.state.userInfo = res.data.user
+    for(let i in payload.data.user){
+      state.userInfo[i] = payload.data.user[i]
+    }
     state.userInfo.defaddr = payload.data.defaddr
     window.localStorage.setItem(path, payload.data.user.autocode)
   }
