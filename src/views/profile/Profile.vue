@@ -119,20 +119,16 @@
           class="portrait"
           src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1595926082386&di=f12c16e500b5e0de2071023e10eb46cd&imgtype=0&src=http%3A%2F%2Ftupian.qqw21.com%2Farticle%2FUploadPic%2F2020-6%2F2020617225141628.jpg"
         ></el-avatar>
-        <div class="myname" style="height: 50px;">
+        <div class="myname">
           <div v-if="userInfo">
             <p>用户名:{{userInfo.name}} /<span @click='signOut'>退出</span></p>
+            
           </div>
           <div v-else>
             <router-link tag="span" to="/login">登录</router-link>/
             <router-link tag="span" to="/register">注册</router-link>
           </div>
         </div>
-        <!-- <div>
-          <p>1</p>
-          <p>2</p>
-          <p>3</p>
-        </div> -->
       </div>
       <div class="userContent">
         <div class="myCell tab1">

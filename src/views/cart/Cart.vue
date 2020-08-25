@@ -109,7 +109,8 @@ export default {
       return this.$store.state.urlPath;
     },
     address() {
-      return this.$store.state.ShoppingAddress;
+      //取出地址中的指定默认配送地址
+      return this.$store.state.ShoppingAddress.takeover_addr.split(",").join(' ');
     },
     shopCart() {
       return this.$store.state.shopCart;

@@ -1,9 +1,7 @@
 <template>
-  <div class="confirmrder">
-    <!-- 注意问题：在确认订单页面时可以更改商品数量的
-    如果有修改数据，记得去找修改购物车数据接口去修改-->
-    <scroll ref="confimscroll" class="confimscroll">
-       <nav-bar>
+  <div id="confirmOrder">
+    <scroll class="scroll">
+      <nav-bar>
         <div slot="left">
           <i class="el-icon-arrow-left"></i>
         </div>
@@ -11,31 +9,27 @@
         <div slot="right"></div>
       </nav-bar>
       <div class='address'>
-        <div v-if='$store.state.userInfo == null'>
+        <div v-if='$store.state.ShoppingAddress == null'>
           <button @click="$store.commit('ROUTERTO','/newAddr/0')">+ 请添加地址</button>
         </div> 
         <div v-else class='selectAddr' @click="$store.commit('ROUTERTO','/allAddr')">
-          <h2>{{'王金帅'}} <span>{{'17515713997' | changeTel}}</span></h2>
-          <div>
-            山东菏泽曹县
-          </div> 
+          <h2>{{address.takeover_name}} <span>{{ address.takeover_tel | changeTel}}</span></h2>
+          <p>{{address.takeover_addr}}</p>
         </div>
       </div>
-
-      <div class="shoplist" v-for="(item,key,index) in shop1" :key="index">
-        <div>{{key}}</div>
-        <div v-for="(list,index) in item" :key="index" class="bottomdet">
-          <div class="ordertail">
-            <div class="listimg">
-              <img :src="$store.state.urlPath+'/goods/'+list.img_cover" alt />
-            </div>
-            <div class="cardet" style="flex:5">
-              <div>{{list.goods_name}}</div>
+      <!-- {{shop}} -->
+      <div v-for="(item,index) in shop" :key="index" style="padding: 15px;">
+        <div class="ordertail">
+          <div class="listimg">
+              <img :src="$store.state.urlPath+'/goods/'+item.img_cover" alt />
+          </div>
+          <div class="cardet" style="flex:5">
+              <div>{{item.goods_name}}</div>
               <div class="norm-box" style="font-size:12px;">
                 <p class="norm">
                   <em
                     style="width: 90px;display: inline-block;white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
-                  >{{list.goods_name}}</em>
+                  >{{item.goods_name}}</em>
                   <span>
                     ,选服务
                     <i class="el-icon-arrow-down"></i>
@@ -44,48 +38,21 @@
               </div>
 
               <div class="pricenum">
-                <span>￥{{list.money_now}}</span>
-                <span>x{{list.num}}</span>
+                <span>￥{{item.money_now}}</span>
+                <span>x{{item.num}}</span>
               </div>
             </div>
+        </div>
+        <div style="text-align: left;">
+          <div>
+              商品金额:<span>￥{{item.money_now}}</span>
           </div>
-      <div class="msgorder2">
-        <div>
-           商品金额:<span>￥{{list.money_now}}</span>
-        </div>
-        <div>运费:0</div>
-        <div>实付金额<span>￥{{list.money_now}}</span></div>
-        <div style="margin:10px">
-          <el-button
-            type="primary"
-            @click="dialogVisible = true"
-            plain
-            style="display:block;width:100%;margin-bottom:10px;"
-          >货到付款</el-button>
-
-          <el-dialog
-            :visible.sync="dialogVisible"
-            width="88%"
-            top="34vh"
-            :modal="false"
-            :show-close="false"
-          >
-            <img style="display: block; width: 50px; height: 50px;margin: 5px auto 10px;" />
-            <span>是否确认使用货到付款提交订单</span>
-            <div>货到付款订单总价</div>
-            <div>含货到付款运费：免运费</div>
-
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogVisible = false">取 消</el-button>
-              <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-            </span>
-          </el-dialog>
-
-          <el-button type="primary" style="display:block;width:100%;" @click="confirm_order">在线支付</el-button>
+          <div>运费:0</div>
+          <div>实付金额<span>￥{{item.money_now}}</span></div>
         </div>
       </div>
-       </div>
-      </div>
+      <!-- <button @click="payment">确认订单-跳转支付页面-也可以打开一个模态框 进行支付</button> -->
+      <el-button type="primary" style="display:block;width:100%;" @click="payment">在线支付</el-button>
     </scroll>
   </div>
 </template>
@@ -95,36 +62,28 @@ import NavBar from "components/common/navbar/NavBar";
 import Scroll from "components/contents/scroll/Scroll";
 import { create_order } from "network/order";
 export default {
-  name: "confirmrder",
+  name: "ConfirmOrder",
+  components: {
+    //组件
+    NavBar,
+    Scroll,
+  },
   data() {
     return {
       orderData: {
         user_id: "",
         shopcarts_id: [],
       },
-      dialogVisible: false,
-      shop: [],
-      shop1: {},
-      money: 0,
     };
   },
-  components: {
-    NavBar,
-    Scroll,
+  beforeRouteLeave (to, from, next) {
+    console.log(from);
+    this.$store.state.configOrderHistory = from.path
+    next()
   },
-  created() {
-    this.shop = JSON.parse(this.$route.params.shop);
-    console.log(this.shop);
-    this.get_shop();
-  },
-  activated() {},
-  deactivated() {},
-  mounted() {},
   methods: {
-    goaddress() {
-      this.$router.push("/address");
-    },
-    confirm_order() {
+    //事件
+    payment() {
       //获取要提交的数据
       this.orderData.user_id = this.$store.state.userInfo;
 
@@ -138,174 +97,91 @@ export default {
             this.$router.push("/profile");
             return;
           }
+          //提交订单成功后。把默认的配送地址取回来。放到购物车页面
+          this.$store.state.ShoppingAddress = this.$store.state.userInfo.defaddr;
           this.$router.push("/payment/" + res.data.order_id);
         });
       }
     },
-    get_shop() {
-      var arr = {},
-        arrname = [];
-      console.log(this.shop);
-      // 逐条去处购物车页面的商品数据
-      this.shop.forEach((item) => {
-        // this.money+=item.money_now*item.num
-        let yy = arrname.indexOf(item.shop_name);
-        if (yy != -1) {
-          arr[item.shop_name].push(item);
-        } else {
-          arrname.push(item.name);
-          arr[item.shop_name] = [];
-          arr[item.shop_name].push(item);
-        }
-      });
-      this.shop1 = arr;
-      console.log(this.shop1)
-    },
   },
+  computed: {
+    //计算
+    address(){
+      return this.$store.state.ShoppingAddress
+    }
+  },
+  created() {
+    //创建
+    //JSON.stringify()  // 把数组/对象类型的数据转换成JSON类型的字符串数据
+    // JSON.parse() 方法把字符串数据转换成原来的类型
+    if(!this.$store.state.userInfo){
+      this.$store.commit('ROUTERTO','/home')
+    }
+    this.shop = JSON.parse(this.$route.params.shop);
+  },
+  activated() {
+    //激活
+  },
+  deactivated() {
+    //未激活
+  },
+  mounted() {
+    //渲染
+  },
+  filters:{
+    changeTel(val){
+      return val.replace(/(\d{3})\d{4}(\d{4})/,'$1****$2')
+    }
+  }
 };
 </script>
-<style lang='less'>
-.confirmrder {
-  background: #ccc;
-  .content {
-    > div {
-      background: white;
-    }
-    > div:not(:first-child) {
-      margin-bottom: 10px;
-    }
-    .shopnamemess {
-      position: relative;
-      display: flex;
-
-      flex-wrap: wrap;
-      border-top: 1px solid #ddd;
-      > div:first-child {
-        flex: 7;
+<style lang="less" scoped>
+#confirmOrder {
+  .scroll {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 49px;
+    overflow: hidden;
+    .address{
+      border-bottom:1px solid baack;
+      box-shadow: 0 1px 1px burlywood;
+      margin-bottom:10px;
+      padding:10px;
+      .selectAddr{
         text-align: left;
-        padding-top: 14px;
-        p {
-          margin-top: 8px;
-          margin-bottom: 0px;
+        h2{
+          margin-bottom:8px;
         }
-      }
-      > div:not(:last-child) {
-        padding-left: 10px;
       }
     }
-    .shoplist {
-      // margin-bottom: 10px;
-      > div {
-        padding: 0 10px;
-        &:first-child {
-          border-bottom: 1px solid #ddd;
-          text-align: left;
-        }
+  }
+}
+.ordertail {
+  display: flex;
+    .listimg {
+       width: 86px;
+       height: 86px;
+       img {
+          width: 100%;
+          height: 100%;
       }
-      .bottomdet {
-        > div {
-          border-bottom: 1px solid #ddd;
-        }
-      }
-      .ordertail {
+  }
+}
+.cardet {
+    padding-left: 10px;
+    .pricenum {
         display: flex;
-        .listimg {
-          width: 86px;
-          height: 86px;
-          img {
-            width: 100%;
-            height: 100%;
-          }
-        }
-        .cardet {
-          padding-left: 10px;
-          .pricenum {
-            display: flex;
-            span {
-              flex: 1;
-              text-align: left;
-              &:nth-child(2) {
-                text-align: right;
-              }
-            }
-          }
-        }
-      }
-    }
-    .msgorder {
-      padding: 0 10px;
-      > div {
-        border-bottom: 1px solid #ddd;
-        text-align: left;
-      }
-    }
-    .msgorder2 {
-      margin-bottom: 0 !important;
-      > div {
-        &:not(:last-child) {
+        span {
+          flex: 1;
           text-align: left;
-          padding: 0 10px;
-        }
-        &:last-child {
-          border-bottom: 1px solid #ddd;
-        }
+          &:nth-child(2) {
+            text-align: right;
+          }
       }
     }
-    .el-button + .el-button {
-      margin-left: 0;
-      margin-top: 10px;
-    }
-    .p {
-      width: 100%;
-      p {
-        // background: url("../../assets/img/orderxt.png") -7px bottom repeat-x;
-        height: 10px;
-        margin: 0;
-        // margin-left:-4px;
-        background-size: 65px 4px;
-      }
-    }
-  }
-}
-.confimscroll {
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  float: left;
-}
-.el-dialog__header {
-  padding: 0;
-}
-.dialog-footer .el-button {
-  width: 48%;
-  border-radius: 20px;
-  &:first-child {
-    margin-right: 3%;
-  }
-}
-.order .content_box .box3,
-.order .content_box .box4,
-.order .content_box .box5{
-  padding-left:10px;
-  float:left;
-  width:374px;
-  padding:10px 0 ;
-  border-bottom: 1px solid #ccc;
-}
-.order .emlis{
-  background: #fff;
-  margin-top:15px;
-  border-radius: 10px;
-  float:left;
-  width:100%;
-}
-.order .emlis .emlis1,
-.order .emlis .emlis2,
-.order .emlis .emlis3{
-  padding-left:10px;
-  float:left;
-  width:374px;
-  padding:10px 0 ;
-  border-bottom: 1px solid #ccc;
 }
 </style>
+
+

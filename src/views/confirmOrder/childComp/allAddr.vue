@@ -17,25 +17,56 @@
               <strong></strong>
             </p>
             <p style="font-size:12px;">
-              <span >{{i}}</span>
+              <!-- <span>{{i}}</span> -->
+              <ul>
+                <li>{{i.takeover_name}}</li>
+                <li>{{i.takeover_tel}}</li>
+                <li>{{i.takeover_addr}}</li>
+              </ul>
             </p>
           </div>
         </div>
-        <div class="rightBox">编辑</div>
+        <div class="rightBox" @click="$store.commit('ROUTERTO','/newAddr/' + i.id)">编辑</div>
       </div>
     </div>
 
     <div class="tabbar">
-      <el-button type="danger" round @click="$store.commit('ROUTERTO','/newAddr')">新增收货地址</el-button>
+      <el-button type="danger" round @click="$store.commit('ROUTERTO','/newAddr/0')">新增收货地址</el-button>
     </div>
   </div>
 </template>
 
 <script>
 import navBar from "components/common/navbar/NavBar";
+//获取所有的收货地址
+import { get_user_address } from "network/address";
+import { autoLand } from "network/user";
+
+import { SET_USERINFO } from "store/mutation-types";
 export default {
   name: "allAddr",
-  activated() {
+  created() {
+    //先请求下用户 ， 后期删除
+    if (!this.$store.state.userInfo) {
+      let path = window.location.origin + "/jd";
+      let autocode = window.localStorage.getItem(path);
+      autoLand({
+        autocode: autocode,
+      }).then((res) => {
+        console.log(res);
+        if (res.code != 200) return;
+        this.$store.commit(SET_USERINFO, res);
+      });
+    }
+    //延迟请求收货地址， 后期去掉定时器
+    setTimeout(() => {
+      get_user_address({
+        user_id: this.$store.state.userInfo.id,
+      }).then((res) => {
+        console.log(res);
+        this.allAddress = res.data;
+      });
+    }, 500);
   },
   data() {
     return {
@@ -43,10 +74,14 @@ export default {
       radio: "1",
     };
   },
-  watch: {
-  },
+  watch: {},
   components: { navBar },
   methods: {
+    updataDef(val) {
+      console.log(val);
+      this.$store.state.ShoppingAddress = val;
+      this.$router.go(-1)      
+    },
   },
   computed: {
     userId() {
@@ -75,7 +110,7 @@ export default {
       flex: 10;
       display: flex;
       .radioBox {
-        width: 24px;
+        width: 60px;
         overflow: hidden;
       }
       p {

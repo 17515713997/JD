@@ -116,6 +116,7 @@ export default {
       state.userInfo[i] = payload.data.user[i]
     }
     state.userInfo.defaddr = payload.data.defaddr
+    state.ShoppingAddress = payload.data.defaddr
     window.localStorage.setItem(path, payload.data.user.autocode)
   }
 }

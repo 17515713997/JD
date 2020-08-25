@@ -36,7 +36,9 @@
         </el-dropdown>
       </div>
     </navbar>
-    <div style="border-top:1px solid #ddd;line-height:50px;">{{moneyall}}</div>
+    <div style="border-top:1px solid #ddd;line-height:50px;" v-for="(item,index) in goods" :key="index"> 
+      {{item.money_now}}
+    </div>
     <scroll ref="payscroll" class="payscroll">
       <div class="p" style="border-top-left-radius:10px;border-top-right-radius:10px;">
         <div></div>
@@ -152,7 +154,7 @@
       </div>
     </scroll>
     <div class="paybar">
-      <el-button type="danger" round style="width:90%;margin-top:10px;">{{radio}}￥{{moneyall}}</el-button>
+      <el-button type="danger" round style="width:90%;margin-top:10px;" @click="paygo" v-for="(item,index) in goods" :key="index">{{radio}}￥{{item.money_now}}</el-button>
     </div>
   </div>
 </template>
@@ -177,33 +179,53 @@ export default {
     navbar,
     scroll,
   },
-  created() {
-    this.order_id = this.$route.params.orderid;
-    this.getpathmentorder();
+  // created() {
+  //   this.order_id = this.$route.params.orderid;
+  //   this.getpathmentorder();
+  // },
+   created() {
+    //创建
+    this.order_id = this.$route.params.order_id;
+    console.log(this.$route);
+    console.log(this.order_id);
+    this.getPayMentOrder();
   },
   activated() {},
   deactivated() {},
   mounted() {},
   methods: {
-    getpathmentorder() {
+    // getpathmentorder() {
+    //   getOrderbyOrderId(this.order_id).then((res) => {
+    //     // console.log(this.order_id)
+    //     if (res.code != 200) {
+    //       // 弹出对话框---获取订单数据失败
+    //       // 跳转页面
+    //       // this.$router.push('/profile')
+    //     }
+    //     this.goods = res.data;
+    //     console.log(this.goods)
+    //     this.goods.forEach((item) => {
+    //       this.moneyall += item.money_now * item.num;
+    //     });
+    //     console.log(res.data);
+    //   });
+    // }
+    getPayMentOrder() {
       getOrderbyOrderId(this.order_id).then((res) => {
-        // console.log(this.order_id)
+        console.log(res);
         if (res.code != 200) {
-          // 弹出对话框---获取订单数据失败
-          // 跳转页面
-          // this.$router.push('/profile')
+          //弹出对话框-----获取订单数据失败
+          //跳转页面 ----我的
+          this.$router.push("/profile");
+          return
         }
         this.goods = res.data;
-        console.log(this.goods)
-        this.goods.forEach((item) => {
-          this.moneyall += item.money_now * item.num;
-        });
-        console.log(res.data);
       });
     },
     paygo() {
       this.dialogVisible = false;
-      this.$router.push("/zf");
+      // this.$router.push("/zf");
+      alert("待支付")
     },
     pushrouper(path) {
       this.$router.push(path);
