@@ -194,22 +194,6 @@ export default {
   deactivated() {},
   mounted() {},
   methods: {
-    // getpathmentorder() {
-    //   getOrderbyOrderId(this.order_id).then((res) => {
-    //     // console.log(this.order_id)
-    //     if (res.code != 200) {
-    //       // 弹出对话框---获取订单数据失败
-    //       // 跳转页面
-    //       // this.$router.push('/profile')
-    //     }
-    //     this.goods = res.data;
-    //     console.log(this.goods)
-    //     this.goods.forEach((item) => {
-    //       this.moneyall += item.money_now * item.num;
-    //     });
-    //     console.log(res.data);
-    //   });
-    // }
     getPayMentOrder() {
       getOrderbyOrderId(this.order_id).then((res) => {
         console.log(res);
