@@ -1,6 +1,6 @@
 <template>
-  <div class="DetailsRotation">
-    <banner :iscopy="false" divID='bannerBox' :isJump = 'true'>
+  <div class="DetailsBanner">
+    <banner :iscopy="false" divID="bannerBox" :isJump="true">
       <div class="feature-item" v-for="(item,index) in dfeature" :key="index">
         <img :src="path+'/goods/'+item" alt />
       </div>
@@ -12,7 +12,7 @@
 //借用Feature 组件 渲染banner,样式效果基本一致
 import { Feature } from "components/common/feature";
 export default {
-  name: "DetailsRotation",
+  name: "DetailsBanner",
   components: {
     //组件
     banner: Feature,
@@ -27,9 +27,14 @@ export default {
   },
   data() {
     return {
-      path: "http://106.12.85.17:8090/public/image",
+      // path: "http://106.12.85.17:8090/public/image",
       iscopy: false,
     };
+  },
+  computed: {
+    path() {
+      return this.$store.state.urlPath;
+    },
   },
   methods: {
     featureAll() {
@@ -38,19 +43,19 @@ export default {
   },
 };
 </script>
-<style scoped>
-.DetailsRotation{
-    width: 100vw;
-    overflow: hidden;
-}
-.feature-item {
+<style lang='less' scoped>
+.DetailsBanner {
   width: 100vw;
-  /*不压缩空间*/
-  flex-shrink: 0;
-  flex-wrap: wrap;
-}
-.feature-item img {
-  width: 100%;
-  display: block;
+  overflow: hidden;
+  .feature-item {
+    width: 100vw;
+    /*不压缩空间*/
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .feature-item img {
+    width: 100%;
+    display: block;
+  }
 }
 </style>

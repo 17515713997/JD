@@ -54,9 +54,9 @@ export default {
   methods: {
     //事件
     tabCenterClick(val) {
-      console.log(val);
+      // console.log(val);
       var num = 0;
-      if (val.constructor == Number || (val.constructor == Number) == String) {
+      if (val.constructor == Number || val.constructor  == String) {
         num = val;
         this.currentIndex = this.title[val - 1];
       } else {
@@ -70,7 +70,7 @@ export default {
           }
         });
       }
-      this.$refs.DetailsScroll.scroll.scrollTo(
+      this.$parent.$refs.DetailsScroll.scroll.scrollTo(
         0,
         num == 0 ? 0 : -num * 800,
         200

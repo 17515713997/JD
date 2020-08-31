@@ -238,7 +238,7 @@ export default {
     // console.log(this.$route.params.code);
     //code 实际上是地址的id编号,传0的时候代表没有编号，新增 ,不是0的时候，就是有编号，就应该修改指定编号的值
     this.code = this.$route.params.code;
-    console.log(this.code);
+    // console.log(this.code);
     if (this.code != 0) {
       //做地址请求   ---> 添加后在做地址请求
       get_user_address({
@@ -249,7 +249,7 @@ export default {
         //做地址赋值，从vuex中取出要修改的地址，存到当前组件中，并使用
         this.address.name = addr.takeover_name;
         this.address.phone = addr.takeover_tel;
-        console.log(addr.takeover_addr);
+        // console.log(addr.takeover_addr);
         let arr = addr.takeover_addr.split(",");
         this.address.particular = arr.pop();
         this.address.nowAddr = arr;
@@ -264,11 +264,9 @@ export default {
             this.active = 3;
           }
         }
-
         //修改城市位置点击后出现的遮罩层的数据
-        console.log(this.address);
-
-        console.log(this.address.nowAddr);
+        // console.log(this.address);
+        // console.log(this.address.nowAddr);
         this.editableTabs = [];
         for (let i = 0; i < this.address.nowAddr.length; i++) {
           this.editableTabs[i] = {};
@@ -353,12 +351,12 @@ export default {
         //对地址选项卡省份设置值
         this.editableTabs[0].content = res.data;
       });
-      console.log(this.editableTabs);
+      // console.log(this.editableTabs);
     },
     //获取市
     getCities(data) {
       getCities(data).then((res) => {
-        console.log(res);
+        // console.log(res);
         //对地址选项卡省份设置值
         this.editableTabs[1].content = res.data;
       });
@@ -367,14 +365,14 @@ export default {
     //获取区/县
     getAreas(data) {
       getAreas(data).then((res) => {
-        console.log(res);
+        // console.log(res);
         //对地址选项卡省份设置值
         this.editableTabs[2].content = res.data;
       });
     },
     //为选项卡 添加title值，并且创建下一个选项卡出现
     addAreaTab(obj, temp) {
-      console.log(obj.active);
+      // console.log(obj.active);
       //设置当前选项按钮的title值
       // type >>   "province", "city", "area"
 
@@ -385,7 +383,7 @@ export default {
         //每次选择的时候，都会从新截取一下选中值 之前的数据
         let a = this.editableTabs.slice(0, obj.active * 1 + 1);
         this.editableTabs = a;
-        console.log(this.editableTabs);
+        // console.log(this.editableTabs);
         //添加下一个选项按钮
         this.editableTabs.push({
           title: "请选择",
@@ -426,7 +424,7 @@ export default {
       if (this.code == 0) {
         // 新增   指定提交字段6
         creat_user_address(data).then((res) => {
-          console.log(res);
+          // console.log(res);
           if (res.code != 200)
             return console.log("添加地址超时/服务器连接失败/或指定字段错误");
           // this.$store.state.ShoppingAddress = res.data   新创建的id
@@ -446,8 +444,8 @@ export default {
           if (!this.$store.state.configOrderHistory) this.$router.push("/cart");
           this.$router.push(this.$store.state.configOrderHistory);
           //如果修改成功购。我需要判断修改的数据 是否提交了默认地址。如果提交默认地址。则改变现有userInfo的defaddr
-          if(data.default == 1){
-            this.$store.userInfo.defaddr = data
+          if (data.default == 1) {
+            this.$store.userInfo.defaddr = data;
           }
         });
       }
@@ -457,7 +455,7 @@ export default {
         // console.log(res);
         this.$router.go(-1);
       });
-      console.log(`删除指定ID = ${this.code} 的收货地址`);
+      // console.log(`删除指定ID = ${this.code} 的收货地址`);
     },
   },
   computed: {
@@ -473,10 +471,6 @@ export default {
       // }
       // return temp
       return val.length > 1 ? val.join(" ") : "选择所在地区";
-    },
-    aaa(val, item) {
-      console.log(val);
-      console.log(item);
     },
   },
 };

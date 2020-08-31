@@ -21,6 +21,8 @@ const NewAddr = () => import('views/confirmOrder/childComp/newAddr')
 const Order = () => import('views/order/Order')
 //支付
 const Payment = () => import('views/order/Payment')
+//更多评价
+const GengDuo = () => import('views/details/childComp/GengDuo')
 const routes = [
   {
     path:'',
@@ -151,6 +153,20 @@ const routes = [
       title: "订单页面"
     },
     component: Order
+  },
+  {//店铺页面
+    path: '/shops/:id', //暂时直接传递商品数据
+    meta: {
+      title: "店铺页"
+    },
+    component:() => import('views/shops/Shops')
+  },
+  {
+    path: "/gengduo",// 惊喜
+    mata: {
+      title: "更多"
+    },
+    component: GengDuo,
   },
 ]
 

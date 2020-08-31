@@ -47,7 +47,7 @@ export default {
       return this.$store.state.shopCartLength
     },
     userInfo(){
-      return this.$store.state.userInfo.id
+      return this.$store.state.userInfo== null? null:this.$store.state.userInfo.id
     },
     user(){
       return this.userInfo!= "" && this.userInfo != null && this.userInfo != undefined
