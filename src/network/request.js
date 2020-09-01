@@ -1,4 +1,7 @@
+import Vue from 'vue'
 import axios from 'axios'
+import VueAxios from 'vue-axios'
+Vue.use(VueAxios, axios)
 //get请求
 export function request(config){
     axios.defaults.timeout = 5000
@@ -59,7 +62,7 @@ export function requestIp(config){
     //请求拦截
     instance.interceptors.request.use(config=>{
         //.....
-        // console.log(config);
+        console.log(config);
         return config
     })
 

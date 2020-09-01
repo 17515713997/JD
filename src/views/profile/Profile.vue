@@ -310,8 +310,7 @@ export default {
       this.$store.state.userInfo = null
       this.$store.state.shopCart = null
       this.$store.state.shopCartLength = 0
-      let path = window.location.origin + '/jd'
-      localStorage.setItem(path,'')
+      window.localStorage.setItem(this.localPath,'')
       //console.log(localStorage.aaa); //undefined
 
       //如果后续我们在进行退出用户后。测试页面时，发现数据没有清空。则在此处添加清空数据的 对应值
@@ -321,6 +320,9 @@ export default {
     userInfo() {
       return this.$store.state.userInfo;
     },
+    localPath(){
+      return this.$store.state.localData
+    }
   },
 };
 </script>

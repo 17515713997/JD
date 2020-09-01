@@ -9,49 +9,110 @@ export function debounce(func, delay) {
     }
 }
 
-// 从商品详情中取出 有用的数据
-export class GoodsInfo {
-    constructor(goods, store) {
-        this.oldPrice = goods.money_old
-        this.newPrice = goods.money_now
-        this.title = goods.name
-        this.goodId = goods.id
-        this.caregory = store.category
-    }
-}
-//从店铺中取出有用的数据
-export class ShopInfo {
-    constructor(store) {
-        this.shopName = store.shopName  //店铺名
-        this.cGoods = store.cGoods      //店铺商品数量
-        this.shopLogo = store.shopLogo  //店铺的logo
-        this.shopId = store.id          //店铺的id
-        this.caregory = store.category  //分类 true 为京东自营 false为个体经营
-        this['收藏字段'] = '收藏的店铺A的id,收藏的店铺B的id,收藏的店铺C的id,收藏的店铺D的id'
+//从商品详情中取出跟商品有关的数据 ----->detailsbaseinfo
+
+// export function GoodsInfo(goods, shops) {  //es5  创建构造函数
+//     this.oldPrice = goods.money_old     //取旧价格
+//     this.newPrice = goods.money_now     //取新价格
+//     this.title = goods.name             //取名字     
+//     this.goodsId = goods.id             //取id
+//     this.caryfory = shops.cartgory      //取分类
+// }
+
+export class GoodsInfo { //es6 类
+    constructor(goods, shops) { // 构造器
+        this.oldPrice = goods.money_old     //取旧价格
+        this.newPrice = goods.money_now     //取新价格
+        this.title = goods.name             //取名字     
+        this.goodsId = goods.id             //取id
+        this.category = shops.category      //取分类
+        //其他。。。
+        //其他的属性
     }
 }
 
-// 从规格或者 关联数据中取出数据
+//从店铺中取出有用的数据
+
+export class ShopInfo {
+    constructor(shops) {
+        this.shopName = shops.shopName
+        this.cGoods = shops.cGoods
+        this.shopLogo = shops.shopLogo
+        this.shopsId = shops.id
+        this.category = shops.category
+        this.collection = '5000'           //被收藏的次数
+    }
+}
+
+//从规格 和关联数据中取数据
+
 export class SelectNorm {
     constructor(norm, relation) {
         if (norm.length > 0) {
-            console.log(norm);
+            this.norm = {}
+            for (let i = 0; i < norm.length; i++) {
+                if (!this.norm[norm[i].ggname]) {
+                    this.norm[norm[i].ggname] = []
+                }
+                this.norm[norm[i].ggname].push(norm[i])
+            }
         }
         if (relation.length > 0) {
-            let name = relation[0].relation_name
-            this[name] = [...relation]
+            this.relation = {}
+            for (let i = 0; i < relation.length; i++) {
+                if (!this.relation[relation[i].relation_name]) {
+                    this.relation[relation[i].relation_name] = []
+                }
+                this.relation[relation[i].relation_name].push(relation[i])
+            }
+        }
+    }
+}
+
+// 获取评价
+
+export class Evaluate {
+    constructor(evaluate) {
+        for (let i = 0; i < evaluate.length; i++) {
+            this[i] = {};
+            //用户名
+            if(evaluate[i].anonymous == 1){
+                let arr = evaluate[i].username.split('') // z h a n g y a g e
+                let name = ""
+                for(let j = 0 ; j < arr.length; j ++){
+                    if(j>0 && j < arr.length-1)
+                        name+= '*'
+                    else name+=arr[j]
+                }
+                this[i].username = name
+            }else {
+                this[i].username = evaluate[i].username
+            }
+            //头像
+            this[i].headPortrait = evaluate[i].headImg;
+            //图片
+            let imgArr= evaluate[i].evaluationImg.split(',')
+            // this[i].evaluationImg = imgArr.concat(imgArr,imgArr,imgArr,imgArr);
+            this[i].evaluationImg = imgArr;
+            //时间
+            let time = new Date(evaluate[i].evaluationTime);
+            this[i].time = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`;
+            //评价
+            this[i].val = evaluate[i].additional;
+            //好评度
+            this[i].highpraise = evaluate[i].Highpraise;
         }
     }
 }
 
 
-// export function 
 
 
 
-// norm   不跳转
-// 关联   直接跳转
 
-// norm————不跳转  + 关联———— 跳转 
 
-// norm +  关联    组合跳转
+
+
+
+
+//定义评价的 class类

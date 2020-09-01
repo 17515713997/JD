@@ -18,12 +18,12 @@
         </tab-bar-item>
     </tab-bar>
     <div class='btnAll'>
-      <router-link tag='button' to='/cart'>
+      <button v-on:click="shopcart">
         <span>加入购物车</span>
-      </router-link>
-      <router-link tag='button' to='payload' class='payload'>
+      </button> 
+      <button class='payload' v-on:click="$emit('to-add-order')">
         <span >立即购买</span>
-      </router-link >
+      </button >
     </div>
   </div>
 </template>
@@ -61,20 +61,16 @@ export default {
       this.$store.dispatch("getShopCart", this.userInfo);
     }
   },
-  activated() {
-    //激活
-  },
-  deactivated() {
-    //未激活
-  },
-  mounted() {
-    //渲染
-  },
   methods: {
     //事件
-  },
-  watch: {
-    //监听
+    shopcart(){
+      // console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+      // console.log(this.$parent.addShop);
+      this.$parent.addShop();
+
+      //出错？啥子问题。。。
+      //this.$emit('addshopcart')
+    }
   },
 };
 </script>

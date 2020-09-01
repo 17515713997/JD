@@ -59,7 +59,7 @@ import HomeFeature from "./childComp/HomeFeature";
 // import {getHomeBanner} from "network/home"
 import { debounce } from "common/utils";
 //引入其他文件
-import { ROUTERTO,SET_USERINFO } from "store/mutation-types";
+import { ROUTERTO, SET_USERINFO } from "store/mutation-types";
 
 //引入网络请求模块部分组件/方法
 import { getHomeBanner, getFeature } from "network/home";
@@ -128,6 +128,7 @@ export default {
     this.$refs.homeScrollCom.scrollTo1(0, this.saveY, 0);
     this.$refs.homeScrollCom.refreshScroll();
     if (!this.$store.state.userInfo) {
+      console.log('执行了')
       this.auto_code();
     }
   },
@@ -140,6 +141,9 @@ export default {
     //显示的goods是哪一个
     showGoodsList() {
       return this.goods[this.tabCurrentType].list;
+    },
+    localPath() {
+      return this.$store.state.localData;
     },
   },
   methods: {
@@ -212,14 +216,19 @@ export default {
     },
     //默认进入页面的时候。都是从首页进入。
     auto_code() {
-      let path = window.location.origin + "/jd";
-      let autocode = window.localStorage.getItem(path);
+      //先去本地存储取值。
+      let data = window.localStorage.getItem(this.localPath);
+      //取到的值，不等于 null  则继续执行
+      console.log(data);
+      if (data == null || data == "") return;
+      let autocode = JSON.parse(data).autoCode;
+      console.log(autocode);
       autoLand({
-        autocode:autocode 
+        autocode: autocode,
       }).then((res) => {
         console.log(res);
         if (res.code != 200) return;
-        this.$store.commit(SET_USERINFO,res)
+        this.$store.commit(SET_USERINFO, res); // 每次都更改登录码
         this.getShopCart(res.data.user.id);
       });
     },

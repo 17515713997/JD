@@ -9,6 +9,7 @@ Vue.use(Vuex)
 
 const state = {
   urlPath: 'http://106.12.85.17:8090/public/image',
+  localData:'JD_entry_data', //用于保存本地存储数据的 key
   TabBar: {
     is_jd_TabBar: true,
     is_jx_TabBar: false,
@@ -47,6 +48,7 @@ const state = {
   areacodeHistory:'/home',   //记录一下离开页面时。的路由地址 ，默认地址为/home
   loginHistory:'/home',     //记录从那个页面跳转到登录的。
   configOrderHistory:null,  //记录离开确认订单时候的路由地址
+  allAddress:null   //  记录所有的用户地址
 }
 const x = new Vuex.Store({
   state,      //状态管理数据

@@ -32,7 +32,7 @@
       </div>
       <div>
         <!-- 正常判断购物车数据 ShopCart 为空。。 -->
-        <div class="cart_empty" v-if="!shopCartLength">
+        <div class="cart_empty" v-if=" shopCart == null || shopCart.length == 0">
           <img :src="urlPath+'/routine/cart_empty.png'" alt />
           <p>您的购物车还没有任何数据，请添加商品</p>
         </div>
@@ -46,6 +46,16 @@
             :goods="item"
             @ischeckshopall="is_check_shop_all"
           ></cart-goods>
+        </div>
+      </div>
+      <hr />
+      <div
+        v-if="!$store.state.userInfo && localShopCart.length>0"
+        style="background-color:#fff;margin-top:10px;"
+      >
+        <div v-for="(item,i) in localShopCart" :key="i">
+          {{item}}
+          <hr />
         </div>
       </div>
       <div class="shopBox">aaaa</div>
@@ -63,21 +73,35 @@ import CartTabBar from "./childComp/CartTabBar";
 import CartGoods from "./childComp/CartGoods";
 
 import { UpdataShopCart } from "network/shopCart";
+import { SET_USERINFO } from "store/mutation-types";
 export default {
   name: "Cart",
   data() {
     return {
       payMentData: [],
+      localShopCart: [], //本地存储的购物车
     };
   },
   created() {
+    console.log(this.$store.state.userInfo);
     //看看用户是否登录
-    if(!this.$store.state.userInfo){
-      this.$store.dispatch("autocode")
+    if (!this.$store.state.userInfo) {
+      //请求自动登录接口
+      console.log("执行了自动登录");
+      //传递一个回调函数
+      this.$store.dispatch("autocode", {
+        resolve: (res) => {
+          console.log(res);
+          if (res.code != 200) return;
+          this.$store.commit(SET_USERINFO, res);
+          this.$store.dispatch("getShopCart", res.data.user.id);
+        },
+      });
     }
-
+    //获取本地存储中购物车的数据
+    this.getLocalShopCart();
     //如果用户存在。则网络请求shopCart数据
-    if (this.$store.state.userInfo && this.shopCartLength == 0) {
+    if (this.$store.state.userInfo && this.shopCart) {
       // this.getShopCart();
       this.$store.dispatch("getShopCart", this.$store.state.userInfo.id);
     }
@@ -88,17 +112,11 @@ export default {
     CartTabBar,
     CartGoods,
   },
-  // beforeRouteEnter(to, from, next) {
-  //   alert("进入cart");
-  //   //这是守卫是在组件创建创建之前调用的。所以不能获取实例 this
-  //   //因为当当前守卫执行的时候，组件实例还没有被创建
-  //   next();
-  // },
   beforeRouteLeave(to, from, next) {
     //如果去的页面时login 页面。 则记录页面
     if (to.path == "/login") this.$store.state.loginHistory = from.path;
     //离开cart页面的时候，修改购物车数据
-    if(this.$store.state.userInfo) this.upDateShopCart();
+    if (this.$store.state.userInfo) this.upDateShopCart();
     next();
   },
   computed: {
@@ -110,10 +128,26 @@ export default {
     },
     address() {
       //取出地址中的指定默认配送地址
-      return this.$store.state.ShoppingAddress.takeover_addr.split(",").join(' ');
+      let addr = "";
+      if (this.$store.state.userInfo) {
+        addr = this.$store.state.ShoppingAddress.takeover_addr;
+      } else {
+        let data = window.localStorage.getItem(this.localPath);
+        if (data != null && data != "")
+          addr =
+            data.orderAddr != undefined
+              ? data.orderAddr
+              : "北京市,北京市,昌平区,";
+        else addr = "北京市,北京市,昌平区,";
+      }
+      return addr.split(",").join(" ");
     },
     shopCart() {
       return this.$store.state.shopCart;
+    },
+    localPath() {
+      //本地存储的key
+      return this.$store.state.localData;
     },
   },
   methods: {
@@ -135,11 +169,7 @@ export default {
           temp++;
         }
       });
-      if (temp == cart_goods.length) {
-        allCheck.checked = true;
-      } else {
-        allCheck.checked = false;
-      }
+      allCheck.checked = temp == cart_goods.length ? true : false;
     },
     //全选按钮事件
     check_shop_all() {
@@ -205,6 +235,13 @@ export default {
           }
         }
       }
+    },
+    getLocalShopCart() {
+      let data = window.localStorage.getItem(this.localPath);
+      console.log(data);
+      data = data != null ? JSON.parse(data) : [];
+      this.localShopCart = data.shopCart ? data.shopCart : [];
+      console.log(this.localShopCart);
     },
   },
 };

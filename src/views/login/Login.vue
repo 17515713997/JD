@@ -70,7 +70,7 @@
 <script>
 import NavBar from "components/common/navbar/NavBar";
 import { land } from "network/user";
-import {POST_SHOPCART,SET_USERINFO} from "store/mutation-types"
+import {SET_USERINFO} from "store/mutation-types"
 export default {
   name: "Login",
   data() {
@@ -105,18 +105,17 @@ export default {
         // area_code:this.$store.state.area_code
       }).then((res) => {
         console.log(res);
-        
+        if(res.code != 200) return console.log(res.msg);
         // //渲染用户 可以单独做一个方法。因为后续 自动登录也需要渲染用户信息
         // this.$store.state.userInfo = res.data.user
         // //渲染用户默认配送地址
         // this.$store.state.userInfo.defaddr = res.data.defaddr
         //跳转指定页面(从哪里来。回哪里去。。。)
-
         this.$store.commit(SET_USERINFO,res)
         //本地存储存数据
-        this.setLocalStorageAutoCode(res.data.user.autocode)
-        //获取购物车数据
-        this.$store.commit(POST_SHOPCART,res.data.user.id)
+        // this.setLocalStorageAutoCode(res.data.user.autocode)
+        //获取购物车数据    因为是异步加载数据，所以需要dispatch进行数据分发。才能监听数据
+        this.$store.dispatch('getShopCart',res.data.user.id)
         //跳转页面
         this.$router.push(this.$store.state.loginHistory)
       });
@@ -137,15 +136,6 @@ export default {
     // 一键登录点击事件
     popUpBox() {
       console.log("暂时不支持一键登录");
-    },
-    // 创建本地存储存自动登录码的方法。
-    setLocalStorageAutoCode(val){
-      console.log(window.location.origin);
-      let key = window.location.origin + '/jd'
-      console.log(key);
-      //存储数据  key = "localhost:8080/jd"  val === JOSN字符串
-      localStorage.setItem(key,val) 
-      // console.log(localStorage);
     },
   },
   created(){

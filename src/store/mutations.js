@@ -3,11 +3,13 @@ import router from '../router'
 // 解构赋值一个常量
 // import {POST_SHOPCART} from "./mutation-types"
 // 获取shopcart网络请求
-import { postShopCart } from 'network/shopCart'
+import { postShopCart, addShopCart } from 'network/shopCart'
+// import { postShopCart} from 'network/shopCart'
 import { autoLand } from 'network/user'
 //取所有的常量
 import * as types from "./mutation-types"
 export default {
+  //回退页面
   [types.BACK]() {
     router.go(-1)
   },
@@ -25,7 +27,7 @@ export default {
       state.shopCart = {};
       state.shopCartHistory = {};
       console.log(res);
-      if (res.code != 200) return console.log('请求数据失败');
+      if (res.code != 200) return console.log(res.msg);
       state.shopCartLength = res.data.length;
       //循环，把同一个店铺的东西分组取出来。
       res.data.forEach(item => {//循环的是所有数据
@@ -70,6 +72,7 @@ export default {
       // console.log(state.shopCartHistory,'shopCartHistory');
     })
   },
+  //修改购物车
   [types.UPDATE_SHOPCART](state, payload) {//方法没有使用。不用定义
     console.log("被执行");
     for (let i in state.shopCart) {
@@ -99,24 +102,57 @@ export default {
     state;
     router.push(payload)
   },
-  //暂时不用
-  [types.AOTU_CODE]() {
-    console.log(window.localStorage);
-    let path = window.location.origin + '/jd'
-    let autocode = window.localStorage.getItem(path)
-    console.log(autocode);
-    return autoLand({autocode})
+  //自动登录
+  [types.AOTU_CODE](state, payload) {
+    //localData:'JD_entry_data'
+    console.log(state.localData)
+    console.log(window.localStorage)
+    console.log(window.localStorage.getItem(state.localData))
+    let data = window.localStorage.getItem(state.localData)
+    console.log(data);
+    if (data != null && data != "" && data != undefined) {
+      console.log(data);
+      let autocode = JSON.parse(data).autoCode
+      console.log(autocode);
+      if (autocode) {
+        autoLand({ autocode }).then(res => {
+          console.log(res);
+          payload.resolve(res)
+        })
+      }
+    }
   },
-  [types.SET_USERINFO](state,payload) {
-    console.log(payload);
+  //登录后,获取自动登录码，并设置本地存储
+  [types.SET_USERINFO](state, payload) {
     state.userInfo = {}
-    let path = window.location.origin + '/jd'
-    // this.$store.state.userInfo = res.data.user
-    for(let i in payload.data.user){
+    for (let i in payload.data.user) {
       state.userInfo[i] = payload.data.user[i]
     }
     state.userInfo.defaddr = payload.data.defaddr
     state.ShoppingAddress = payload.data.defaddr
-    window.localStorage.setItem(path, payload.data.user.autocode)
+    //先去本地存储取值，在设置autoCode
+    let data = window.localStorage.getItem(state.localData);
+    data = (data != null && data != "") ? JSON.parse(data) : {}
+    data.autoCode = payload.data.user.autocode;
+    window.localStorage.setItem(state.localData, JSON.stringify(data))
+    //如果本地存储购物车有数据，则把购物车的数据和当前用户购物车合并，并删除本地存储的购物车
+
+    if (data.shopCart != undefined && data.shopCart.length > 0) {
+      Promise.all([...data.shopCart.map(item => {
+        item.user_id = state.userInfo.id
+        return new Promise((resolve, reject) => {
+          addShopCart(item).then(res => {
+            if(res.code != 200) reject("添加异常")
+            resolve(res)
+          })
+        })
+      })]).then(success => {
+        console.log(success);
+        delete data['shopCart']
+        window.localStorage.setItem(state.localData, JSON.stringify(data))
+      },err=>{
+        console.log(err);
+      })
+    }
   }
 }

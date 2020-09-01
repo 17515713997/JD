@@ -20,6 +20,7 @@
       .selected,
       .distribution,
       .weight,
+      .freeFreight,
       .service {
         display: flex;
         min-height: 40px;
@@ -35,10 +36,25 @@
         .right {
           flex: 5;
           text-align: left;
-          .icon {
+          font-size: 12px;
+          padding-right: 20px;
+          div {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            display: -webkit-box; /*必须结合的属性 ，将对象作为弹性伸缩盒子模型显示 。*/
+            -webkit-line-clamp: 1; /*用来限制在一个块元素显示的文本的行数。*/
+            -webkit-box-orient: vertical; /*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式 。*/
+            span {
+              color: red;
+              border: 1px solid red;
+              margin-right: 5px;
+            }
+          }
+          span.icon {
             position: absolute;
             right: 10px;
             top: 10px;
+            font-size: 16px;
           }
         }
       }
@@ -70,27 +86,13 @@
         }
       }
     }
-    .evaluate {
-      border-radius: 10px;
-      margin-top: 10px;
-      background-color: #fff;
-      text-align: left;
-      padding: 5px 10px;
-      .title {
-        display: flex;
-        margin-bottom: 10px;
-        line-height: 30px;
-        .user {
-          flex: 7;
-        }
-        .time {
-          flex: 2;
-          text-align: left;
-        }
-        .value {
-        }
-      }
-    }
+  }
+}
+</style>
+<style lang="less">
+#details{
+  .drawerHeight{
+    height:60vh !important; 
   }
 }
 </style>
@@ -100,102 +102,174 @@
     <scroll class="detailsScroll" ref="DetailsScroll" @parentScroll="getScrollY" :probeType="3">
       <details-banner :dfeature="goodsImg"></details-banner>
       <div class="message">
+        <!-- 商品信息 -->
         <details-base-info :goodsInfo="detailsGoods"></details-base-info>
 
-        <div class="discount" @click="selected = true">
+        <!-- 优惠 -->
+        <div class="discount" @click="open('discount')">
           <div class="left">优惠</div>
           <div class="right">
-            <span class="icon el-icon-more-outline"></span>
+            <div>
+              <span>换购</span>是否有换购---有 显示,没有不选是
+            </div>
+            <div>
+              <span>限购</span>是否有限购---有 显示,没有不选是 111 111 111 1 11 11
+            </div>
+            <span class="icon el-icon-more"></span>
           </div>
         </div>
-
-        <div class="selected" @click="selected = true">
+        <!-- 已选 -->
+        <div class="selected" @click="open('selected')">
           <div class="left">已选</div>
           <div class="right">
-            <span class="icon el-icon-more-outline"></span>
+            <span>规格....</span>
+            <span>{{orderSel.order_num}}个</span>
+
+            <span class="icon el-icon-more"></span>
           </div>
         </div>
-
-        <div class="distribution" @click="distribution = true">
+        <!-- 送至 -->
+        <div class="distribution" @click="open('distribution')">
           <div class="left">送至</div>
           <div class="right">
-            <p>{{addr}}</p>
+            <p>{{addr | changeAddr}}</p>
             <p>
-              <span style="color:red">现货</span>
-              {{deliveryNotice}}
+              <span v-if="true" title="库存有货则显示">现货</span>
+              {{getDistributionTime}}
             </p>
-            <span class="icon el-icon-more-outline"></span>
+            <span class="icon el-icon-more"></span>
+          </div>
+        </div>
+        <!-- 重量   不免运费  显示重量   免运费  显示 运费-->
+        <div class="freeFreight" v-if="free_freight">
+          <div class="left">运费</div>
+          <div class="right">
+            <p>免运费</p>
+            <span class="icon el-icon-more"></span>
+          </div>
+        </div>
+        <div class="weight" v-else>
+          <div class="left">重量</div>
+          <div class="right">
+            <p>不免运费，显示重量(kg)</p>
+            <span class="icon el-icon-more"></span>
           </div>
         </div>
 
-        <div class="weight">
-          <div class="left">重量</div>
-          <div class="right">{{'商品重量(kg)'}}</div>
-        </div>
-        <div class="service" @click="service = true">
+        <!-- 服务 -->
+        <div class="service" @click="open('service')">
           <div class="left">服务</div>
-          <span class="icon el-icon-more-outline"></span>
+          <div class="right">
+            <span class="icon el-icon-more"></span>
+          </div>
         </div>
-      </div>
-      <div class="evaluate">
-        <h1 class="head">
-          评价组件
-          <span>好评</span>
-        </h1>
-        <ul>
-          <li v-for="i in [1,2]" :key="i">
-            <div class="title" style="padding-top:10px">
-              <span class="user">用户头像+名称</span>
-              <!-- 评价应为倒序排列。最新评价在最上面 -->
-              <span class="time">{{evaluatetime}}</span>
-            </div>
-            <div class="value"
-            >评价内容评价内容评价内容评价内容评价内容</div>
-            <div>评价图片</div>
-          </li>
-          <button style="margin-top:20px;padding:10px;width:100%" @click="gengduo">查看更多</button>
-        </ul>
       </div>
 
-      <shops-info class="shopInfo" :storeinfo="shopInfo"></shops-info>
+      <!--评价 自定义 一个变量数组 暂时使用 -->
+      <details-evaluate :evaluate="detailsEvaluate" :cDetailsId="detailsId"></details-evaluate>
+      <!-- 问答 -->
+
+      <!-- 体验 -->
+
+      <!-- 商铺信息 -->
+      <shops-info :shopsinfo="shopInfo"></shops-info>
+
+      <!-- 推荐 -->
       <div style="height:800px;background-color:#fff;margin-top:10px;">
         <h1>推荐</h1>请求数据库 获取一些与当前商品相关 或者类似的数据
         <hr />推荐组件
+        <ul>
+          <li>推荐</li>
+          <li>猜你喜欢</li>
+        </ul>
       </div>
+      <!-- 详情 -->
       <div style="height:800px;background-color:#fff;margin-top:10px;">
         <h1>详情 = 文字 + 图片的组合</h1>
+        <ul>
+          <li>商品介绍</li>
+          <li>规格参数</li>
+          <li>售后服务</li>
+        </ul>
       </div>
+
+      <!-- 遮罩菜单 -->
+
+      <el-drawer
+        title="优惠"
+        direction="btt"
+        :close-on-press-escape="false"
+        :visible.sync="discount"
+        :append-to-body="true"
+      >
+        <span>我来啦!</span>
+      </el-drawer>
+      <el-drawer
+        title="已选"
+        direction="btt"
+        :close-on-press-escape="false"
+        :visible.sync="selected"
+        :append-to-body="true"
+        :withHeader="false"
+      >
+        <div>
+          <div v-for="(item,index) in selectNorm" :key="index">
+            <div v-for="(i,j) in item" :key="j">
+              <div>{{j}}</div>
+              <div
+                v-for="(m,n) in i"
+                :key="n"
+                style="width:90%;height:30px;text-overflow:hidden;overflow:hidden;margin-bottom:10px;text-align:left;background-color:#d4d4d4;line-height:30px;margin-left:5%;border-radius:15px;"
+              >{{m.name}}</div>
+            </div>
+          </div>
+          <div class="order_num">
+            <div>数量</div>
+            <div>
+              <button @click="order_num--" :disabled="orderSel.order_num <= 1">-</button>
+              <input type="text" v-model="orderSel.order_num" />
+              <button @click="orderSel.order_num++">+</button>
+            </div>
+          </div>
+        </div>
+      </el-drawer>
+      <!-- 配送 -->
+      <el-drawer
+        title="配送至"
+        direction="btt"
+        :close-on-press-escape="false"
+        :visible.sync="distribution"
+        :append-to-body="true"
+        size='70%'
+      >
+        <ul style="text-align:left;line-height:20px; font-size:14px;padding:0 10px;" v-if="$store.state.userInfo">
+          <li
+            style="padding:10px 0;"
+            v-for="(item,index) in allAddress"
+            :key="index"
+            @click="changeAddr(item.takeover_addr)"
+          >
+            <!-- 使用过滤器吧地址进行拼接 -->
+            {{ item.takeover_addr | changeAddr}}
+          </li>
+        </ul>
+        <div v-else>
+          省市县三级列表菜单
+        </div>
+      </el-drawer>
+      <el-drawer
+        title="服务"
+        direction="btt"
+        :close-on-press-escape="false"
+        :visible.sync="service"
+        :append-to-body="true"
+        :withHeader="false"
+      >
+        <span>服务</span>
+      </el-drawer>
     </scroll>
 
-    <details-tab-bar></details-tab-bar>
-
-    <el-drawer
-      direction="btt"
-      :visible.sync="selected"
-      :close-on-press-escape="false"
-      :append-to-body="true"
-      :withHeader="false"
-    >
-      <span>选择!</span>
-    </el-drawer>
-    <el-drawer
-      direction="btt"
-      :visible.sync="distribution"
-      :close-on-press-escape="false"
-      :append-to-body="true"
-      :withHeader="false"
-    >
-      <span>送至!</span>
-    </el-drawer>
-    <el-drawer
-      direction="btt"
-      :visible.sync="service"
-      :close-on-press-escape="false"
-      :append-to-body="true"
-      :withHeader="false"
-    >
-      <span>服务!</span>
-    </el-drawer>
+    <details-tab-bar :addshopcart="addShop" :to-add-order="addOrder"></details-tab-bar>
   </div>
 </template>
 
@@ -206,12 +280,15 @@ import DetailsNavBar from "./childComp/DetailsNavBar";
 import DetailsBanner from "./childComp/DetailsBanner";
 import DetailsBaseInfo from "./childComp/DetailsBaseInfo";
 import ShopsInfo from "./childComp/ShopsInfo";
+import DetailsEvaluate from "./childComp/DetailsEvaluate";
 import DetailsTabBar from "./childComp/DetailsTabBar";
 //引入商品数据网络请求
 // import {getgoods,getGoods_id} from 'network/goods'
-import { getGoodsId } from "network/goods";
-
-import { GoodsInfo, ShopInfo, SelectNorm } from "common/utils";
+import { getGoodsId } from "network/details";
+import { get_user_address } from "network/address";
+import { addShopCart } from "network/shopCart";
+import { GoodsInfo, ShopInfo, SelectNorm, Evaluate } from "common/utils";
+// import { GoodsInfo, ShopInfo} from "common/utils";
 export default {
   name: "Details",
   props: {},
@@ -219,20 +296,27 @@ export default {
     return {
       // path: "http://106.12.85.17:8090/public/image",
       titleArr: ["商品", "评价", "详情", "推荐"],
-      detailsGoods: {},
-      goodsImg: null,
+      detailsGoods: {}, //商品详情数据
+      goodsImg: [], //轮播图数据
+      shopInfo: {}, //商铺数据
+      selectNorm: {}, // 规格数据
+      detailsEvaluate: {}, // 商品评价
       currentIndex: 0,
       saveY: 0,
       tabCenter: null,
-      loading: false,
-      shopInfo: null,
-      selectNorm: {},
+      loading: false, // 是否加载等待
       discount: false, //优惠遮罩层，不显示
       selected: false, // 选择遮罩层 不显示
       distribution: false, // 送至遮罩层 不显示
       service: false, //服务遮罩层不显示
       nowGoods: true,
       shopCategory: "", //商铺是个体还是自营
+      addr: "", // 在本地存储取到的地址
+      free_freight: 0, // 是否免运费  0 不免  1 免
+      orderSel: {
+        norm: {},
+        order_num: 1,
+      },
     };
   },
   components: {
@@ -241,66 +325,81 @@ export default {
     DetailsBanner,
     DetailsBaseInfo,
     ShopsInfo,
+    DetailsEvaluate,
     DetailsTabBar,
   },
   computed: {
-    evaluatetime() {
-      //评价时间
-      let time = new Date();
-      return (
-        time.getFullYear() + "-" + (time.getMonth() + 1) + "-" + time.getDate()
-      );
-    },
-    addr() {
-      //计算地址
-      if (this.$store.state.ShoppingAddress) {
-        return this.setAddr();
-      } else {
-        return "北京市 西三环";
-      }
-    },
-    deliveryNotice() {
-      //获取一下 是 个体 还是自营
+    getDistributionTime() {
+      //获取配送的时间
+      let nowTime = new Date();
+      // let h = nowTime.getHours();
+      let h = 20;
       let temp = "";
-      let newTime = new Date();
-      let h = newTime.getHours();
-      if (this.category == "自营") {
-        //自营
-        if (this.nowGoods) {
-          //现货
-          if (h >= 0 && h < 11) temp = `11:00前下单,预计(今日)17:00前送达`;
-          if (h < 23)
-            temp = `23:00前下单，预计明天(${newTime.getMonth()}月${newTime.getDate()}日)送达`;
-          if (h >= 23)
-            temp = `11:00前下单，预计明天(${newTime.getMonth()}月${newTime.getDate()}日)送达`;
+      if (this.shopCeatgory == "自营") {
+        //jd自营
+        if (this.aa) {
+          //本地配送  +1
+          if (h >= 0 && h < 11) {
+            temp = `在11:00前下单，预计今天送达,${this.shopCategory}`;
+          }
+          if (h > 11 && h < 23) {
+            temp = `在23:00前下单，预计明天( ${this.setDate(nowTime, 1)})送达,${
+              this.shopCategory
+            }`;
+          }
+          if (h >= 23) {
+            temp = `在明天(11:00)前下单,预计明天(${this.setDate(
+              nowTime,
+              1
+            )})17:00前送达,${this.shopCategory}`;
+          }
         } else {
-          //异地调货
-          if (h >= 0 && h < 11) temp = `11:00前下单,预计(今日)17:00前送达`;
-          if (h < 23)
-            temp = `23:00前下单，预计明天(${newTime.getMonth()}月${newTime.getDate()}日)送达`;
-          if (h >= 23)
-            temp = `11:00前下单，预计明天(${newTime.getMonth()}月${newTime.getDate()}日)送达`;
+          //异地配送  +2
+          if (h >= 0 && h < 11) {
+            temp = `在11:00前下单，预计${this.setWeek(
+              nowTime,
+              3
+            )}(${this.setDate(nowTime, 2)})送达,${this.shopCategory}`;
+          }
+          if (h > 11 && h < 23) {
+            temp = `在23:00前下单，预计${this.setWeek(
+              nowTime,
+              3
+            )}(${this.setDate(nowTime, 3)})送达,${this.shopCategory}`;
+          }
+          if (h >= 23) {
+            temp = `在明天(11:00)前下单,预计${this.setWeek(
+              nowTime,
+              3
+            )}(${this.setDate(nowTime, 3)})17:00前送达,${this.shopCategory}`;
+          }
         }
       } else {
-        //非自营
-        if (h >= 0 && h < 11)
-          temp = `11:00前下单,预计${this.setWeek(newTime, 3)}(${this.setDate(
-            newTime,
+        // 个体
+        if (h >= 0 && h < 11) {
+          temp = `在11:00前下单，预计今天送达,${this.shopCategory}`;
+        }
+        if (h > 11 && h < 23) {
+          temp = `在23:00前下单，预计${this.setWeek(nowTime, 3)}(${this.setDate(
+            nowTime,
             3
-          )})送达`;
-        if (h < 23)
-          temp = `23:00前下单，预计${this.setWeek(newTime, 4)}(${this.setDate(
-            newTime,
-            4
-          )})日送达`;
-        if (h >= 23)
-          temp = `11:00前下单，预计${this.setWeek(newTime, 4)}(${this.setDate(
-            newTime,
-            4
-          )})送达`;
+          )})送达,${this.shopCategory}`;
+        }
+        if (h >= 23) {
+          temp = `在明天(11:00)前下单,预计${this.setWeek(
+            nowTime,
+            3
+          )}(${this.setDate(nowTime, 3)})17:00前送达,${this.shopCategory}`;
+        }
       }
       return temp;
     },
+    allAddress() {
+      return this.$store.state.allAddress;
+    },
+    localPath(){
+      return this.$store.state.localData
+    }
   },
   created() {
     // console.log(this.$router);
@@ -308,9 +407,10 @@ export default {
     // console.log("details被创建");
     this.detailsId = this.$route.params.id;
     this.getGoods(this.detailsId);
-    this.setWeek();
+    this.getAddr();
+    this.lookLocalStorage();
   },
-  activated() {},
+  watch: {},
   mounted() {
     this.$bus.$on("toDE", (path) => {
       this.isShow = true;
@@ -321,10 +421,6 @@ export default {
     // console.log(this.tabCenter);
   },
   methods: {
-    gengduo(){
-      alert("更多");
-      this.$router.push("/gengduo");
-    },
     //通过id获取商品的方法
     getGoods(data) {
       //页面等待
@@ -332,22 +428,33 @@ export default {
       getGoodsId(data).then((res) => {
         if (res.code != 200) return;
         console.log(res);
-        //new 一个 商品信息 数据
+        // 获取轮播数据
+        this.goodsImg = res.data.goodsData.img_detalis_list;
+        // 商品数据
+
         this.detailsGoods = new GoodsInfo(
           res.data.goodsData,
           res.data.shopData
         );
-        //new 一个 店铺信息数据
+        // 取店铺数据
         this.shopInfo = new ShopInfo(res.data.shopData);
-        //new 一个 选择 数据
-        this.SelectNorm = new SelectNorm(
+        console.log(this.detailsGoods);
+        // 取规格数据
+        this.selectNorm = new SelectNorm(
           res.data.norms,
           res.data.relationGoods
         );
-        // 获取轮播数据
-        this.goodsImg = res.data.goodsData.img_detalis_list;
-        //个体 还是 自营
+        // this.getNorm(res.data.norms,res.data.relationGoods)
+
+        //获取评价
+        this.detailsEvaluate = new Evaluate(res.data.sevaluateDate);
+        console.log(this.detailsEvaluate);
+        //自营 还是个体
+
         this.shopCategory = res.data.shopData.category;
+        //是否免运费
+        this.free_freight = res.data.goodsData.free_freight == 0 ? false : true;
+        console.log(this.free_freight);
         this.loading = false;
       });
     },
@@ -381,6 +488,37 @@ export default {
       }
       if (temp.length == 3) temp.pop();
       return temp.join(" ");
+    },
+    changeAddr(val) {
+      //存到本地存储中 ， 存储的数据，不去存截取后的值，直接存原值
+      this.addr = val
+      let data = window.localStorage.getItem(this.localPath);
+      if (data != null) {
+        data = JSON.parse(data);
+      } else {
+        data = {};
+      }
+      data.orderAddr = val;
+      window.localStorage.setItem(this.localPath, JSON.stringify(data));
+      this.distribution = false;
+    },
+    getAddr() {
+      let data = window.localStorage.getItem(this.localPath);
+      if (data != null && data != '') {
+        data = JSON.parse(data);
+        if (data.orderAddr != undefined && data.orderAddr != null &&data.orderAddr != '') {
+          this.addr = data.orderAddr;
+        } else {
+          this.addr = "北京市,北京市,昌平区,";
+          data.orderAddr = "北京市,北京市,昌平区,";
+        } 
+      } else {
+        this.addr = "北京市,北京市,昌平区,";
+        data = {};
+        data.orderAddr = "北京市,北京市,昌平区,";
+      }
+      // console.log(this.addr);
+      window.localStorage.setItem(this.localPath, JSON.stringify(data));
     },
     setDate(nowtime = new Date(), val = 1) {
       let calculationTime = new Date(
@@ -425,10 +563,167 @@ export default {
         return a;
       }
     },
+    open(val) {
+      if (val == "discount") {
+        this.discount = true;
+      }
+      if (val == "selected") {
+        this.selected = true;
+      }
+      if (val == "distribution") {
+        this.distribution = true;
+        // 点击配送至 ---->如果用户没有登录，应该先让他登录。在获取数据
+        if (!this.$store.state.userInfo) {
+          //打开省市县 地址
+
+          this.$store.state.allAddress = "弹出个选择框-省-市-县";
+          //在弹出框内 的县的位置，点击选择之后。把 省市县的值赋值给  this.$store.state.allAddress
+          //并且  "省,市,县," ==>  ['省','市','县','']
+
+          return;
+        }
+        if (this.allAddress == null) {
+          get_user_address({
+            user_id: this.$store.state.userInfo.id,
+          }).then((res) => {
+            this.$store.state.allAddress = res.data;
+          });
+        }
+      }
+      if (val == "service") {
+        this.service = true;
+      }
+    },
+    getNorm(norm, relation) {
+      this.selectNorm = {};
+      let aaa = {};
+      if (norm.length > 0) {
+        for (let i = 0; i < norm.length; i++) {
+          if (!aaa[norm[i].ggname]) {
+            aaa[norm[i].ggname] = [];
+          }
+          aaa[norm[i].ggname].push(norm[i]);
+        }
+      }
+      this.selectNorm.norm = aaa;
+      let bbb = {};
+      if (relation.length > 0) {
+        for (let i = 0; i < relation.length; i++) {
+          console.log(bbb);
+          if (!bbb[relation[i].relation_name]) {
+            bbb[relation[i].relation_name] = [];
+          }
+          bbb[relation[i].relation_name].push(relation[i]);
+        }
+      }
+      this.selectNorm.relation = bbb;
+      console.log(this.selectNorm);
+    },
+    //添加购物车
+    addShop() {
+      let shopCart = {};
+      shopCart.goods_id = this.detailsId;
+      shopCart.user_id = this.$store.state.userInfo
+        ? this.$store.state.userInfo.id
+        : "";
+      shopCart.num = this.orderSel.order_num;
+      //需要计算取值
+      shopCart.norm = JSON.stringify(this.orderSel.norm); //传递json串
+      shopCart.takeover_addr = this.addr;
+
+      if (this.$store.state.userInfo) {
+        //请求购物车
+        addShopCart(shopCart).then((res) => {
+          
+          if(res.code != 200) return console.log(res.msg);
+
+          //重新获取购物车数据
+          this.$store.dispatch('getShopCart', this.$store.state.userInfo.id)
+        });
+      } else {
+        //没有用户的情况下。也能添加购物车
+        console.log("用户不存在");
+        let data = window.localStorage.getItem(this.localPath);
+        console.log(data);
+        if (data != null && data != "") {
+          data = JSON.parse(data);
+          let temp = 0;
+          if (data.shopCart) {
+            for (let i = 0; i < data.shopCart.length; i++) {
+              if (
+                data.shopCart[i].goods_id == shopCart.goods_id &&
+                data.shopCart[i].norm == shopCart.norm &&
+                data.shopCart[i].takeover_addr == shopCart.takeover_addr
+              ) {
+                data.shopCart[i].num += shopCart.num * 1;
+                break;
+                // continue;
+              }
+              temp++;
+              console.log(temp);
+            }
+            if (temp == data.shopCart.length) {
+              data.shopCart.push(shopCart);
+            }
+          } else {
+            data.shopCart = [];
+            data.shopCart.push(shopCart);
+          }
+        } else {
+          data = {};
+          data.shopCart = [];
+          data.shopCart.push(shopCart);
+        }
+        this.calculationStorageShopNum(data.shopCart);
+        //。。。shopCart是否存在.存在 添加数据。不存在创建数据
+        window.localStorage.setItem(this.localPath, JSON.stringify(data));
+      }
+    },
+    addOrder() {
+      console.log("执行了添加订单");
+    },
+    //查看本地存储是否存有购物车数据
+    lookLocalStorage() {
+      if (!this.$store.state.userInfo) {
+        console.log("a");
+        let data = window.localStorage.getItem(this.localPath);
+        console.log(data);
+        if (data == null || data == "") return;
+        data = JSON.parse(data)
+        if (!data.shopCart) return;
+        this.calculationStorageShopNum(data.shopCart);
+      }
+    },
+    //计算用户没有登录的时候购物车的数量
+    calculationStorageShopNum(arr) {
+      this.$store.state.shopCartLength = 0;
+      arr.forEach((item) => {
+        this.$store.state.shopCartLength += item.num * 1;
+      });
+    },
   },
   filters: {
     changePrice(val, str = "$") {
       return str + Number(val).toFixed(2);
+    },
+    changeEvaluate(val) {
+      // console.log(val);
+      return val;
+    },
+    changeAddr(val) {
+      //去掉重复值的操作。。。。。
+      // console.log(val);
+      let addr = val.split(",")
+      // console.log(addr);
+      let temp = [];
+      for(let i = 0 ; i < addr.length ; i++){
+        if(temp.indexOf(addr[i]) == -1){
+          temp.push(addr[i])
+        }
+        // console.log(temp);
+      }
+      addr = temp.join("");
+      return addr;
     },
   },
 };
