@@ -150,6 +150,7 @@ export default {
     //取banner的数据
     getHomeBanner() {
       getHomeBanner().then((res) => {
+        if(res.data != 200) return;
         this.banners = res.data;
       });
     },

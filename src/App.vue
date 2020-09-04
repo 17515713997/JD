@@ -37,6 +37,7 @@ export default {
           "(" + res.slice(res.indexOf("=") + 1, res.length - 1) + ")"
         ).cname;
     });
+    // this.$store.commit('aaa')
   },
   computed: {
     //计算
@@ -54,9 +55,9 @@ export default {
     },
   },
   watch: {
-    is_jd_tabbar(newVal, oldVal) {
-      console.log(newVal, oldVal);
-    },
+    // is_jd_tabbar(newVal, oldVal) {
+    //   console.log(newVal, oldVal);
+    // },
   },
 };
 </script>

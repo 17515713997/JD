@@ -1,6 +1,6 @@
 <template>
   <div>
-    <scroll id="cartScroll">
+    <scroll id="cartScroll" v-loading="$store.state.loading">
       <nav-bar class="cartNavBar" ref="cartNavBar">
         <div slot="left" class="left" v-on:click="$store.commit('BACK')">
           <i class="el-icon-arrow-left"></i>
@@ -32,6 +32,7 @@
       </div>
       <div>
         <!-- 正常判断购物车数据 ShopCart 为空。。 -->
+
         <div class="cart_empty" v-if=" shopCart == null || shopCart.length == 0">
           <img :src="urlPath+'/routine/cart_empty.png'" alt />
           <p>您的购物车还没有任何数据，请添加商品</p>
@@ -78,22 +79,22 @@ export default {
   name: "Cart",
   data() {
     return {
-      payMentData: [],
       localShopCart: [], //本地存储的购物车
     };
   },
   created() {
-    console.log(this.$store.state.userInfo);
-    //看看用户是否登录
     if (!this.$store.state.userInfo) {
-      //请求自动登录接口
-      console.log("执行了自动登录");
-      //传递一个回调函数
+      //请求自动登录接口  传递一个回调函数
+      this.$store.state.loading = true;
       this.$store.dispatch("autocode", {
         resolve: (res) => {
-          console.log(res);
           if (res.code != 200) return;
-          this.$store.commit(SET_USERINFO, res);
+          this.$store.commit(SET_USERINFO,{
+            data:res.data,
+            success:(res)=>{
+              this.$store.dispatch("getShopCart", res.data.user.id);
+            }
+          });
           this.$store.dispatch("getShopCart", res.data.user.id);
         },
       });
@@ -101,7 +102,7 @@ export default {
     //获取本地存储中购物车的数据
     this.getLocalShopCart();
     //如果用户存在。则网络请求shopCart数据
-    if (this.$store.state.userInfo && this.shopCart) {
+    if (this.$store.state.userInfo) {
       // this.getShopCart();
       this.$store.dispatch("getShopCart", this.$store.state.userInfo.id);
     }
@@ -194,7 +195,7 @@ export default {
     confirmOrder() {
       //获取cart页面中被选择的订单商品
       let cart_goods = this.$refs.cart_goods;
-      let arr = [];
+      this.$store.state.payMentData = []
       cart_goods.forEach((item) => {
         //获取每个组件内。商品前的复选框组
         let inputAll = item.$el.querySelectorAll(".radio input");
@@ -202,13 +203,24 @@ export default {
         for (let i = 0; i < inputAll.length; i++) {
           if (inputAll[i].checked) {
             //可以定义cart全局的，方便以后自己及组件使用
-            this.payMentData.push(item.goods[i]);
-            //方法存要提交的数据
-            arr.push(item.goods[i]);
+            this.$store.state.payMentData.push(item.goods[i]);
           }
         }
       });
-      this.$router.push("/confirm_order/" + JSON.stringify(arr));
+      // this.$router.push("/confirm_order/" + JSON.stringify(arr));
+
+
+      //把购物车提交到订单内的数据 存储到本地中
+      let data = window.localStorage.getItem(this.$store.state.localData);
+      data =
+        data != undefined && data != null && data != ""
+          ? JSON.parse(data)
+          : {};
+      //为 本地存储中添加 payMentData ， 值为提交到confirmOrder中的数据
+      data.payMentData = this.$store.state.payMentData
+      //存储
+      window.localStorage.setItem(this.$store.state.localData,JSON.stringify(data))
+      this.$router.push("/confirm_order/aaa");
     },
     //在页面离开的时候。调用方法，修改数据库的值
     upDateShopCart() {
@@ -230,8 +242,11 @@ export default {
             data.num = shopCart[i][j].num;
             data.ischeck = shopCart[i][j].ischeck;
             data.norm = shopCart[i][j].norm;
+            data.takeover_addr = shopCart[i][j].takeover_addr;
             //执行网络请求
-            UpdataShopCart(data);
+            UpdataShopCart(data).then(res=>{
+              console.log(res);
+            });
           }
         }
       }

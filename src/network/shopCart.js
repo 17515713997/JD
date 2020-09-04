@@ -13,6 +13,13 @@ export function UpdataShopCart(data) {
     return requestPost({
         url: '/vuedemo/update_shopcart',
         data
+        // data:{
+        //     "id":null,
+        //     "num":null,
+        //     "norm":null,
+        //     "ischeck":null,
+        //     "takeover_addr":null
+        // }
     })
 }
 

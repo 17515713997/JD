@@ -69,6 +69,7 @@ export default {
         state.ShopCartMoneyAll += item.money_now * item.num
         state.ShopCartGoodsNum += item.num * 1
       })
+      state.loading = false;
       // console.log(state.shopCartHistory,'shopCartHistory');
     })
   },
@@ -105,16 +106,13 @@ export default {
   //自动登录
   [types.AOTU_CODE](state, payload) {
     //localData:'JD_entry_data'
-    console.log(state.localData)
-    console.log(window.localStorage)
-    console.log(window.localStorage.getItem(state.localData))
     let data = window.localStorage.getItem(state.localData)
     console.log(data);
-    if (data != null && data != "" && data != undefined) {
+    if (data != undefined && data != null && data != "") {
       console.log(data);
       let autocode = JSON.parse(data).autoCode
       console.log(autocode);
-      if (autocode) {
+      if (autocode != undefined && autocode != null && autocode != '') {
         autoLand({ autocode }).then(res => {
           console.log(res);
           payload.resolve(res)
@@ -124,6 +122,7 @@ export default {
   },
   //登录后,获取自动登录码，并设置本地存储
   [types.SET_USERINFO](state, payload) {
+    console.log(payload);
     state.userInfo = {}
     for (let i in payload.data.user) {
       state.userInfo[i] = payload.data.user[i]
@@ -137,6 +136,7 @@ export default {
     window.localStorage.setItem(state.localData, JSON.stringify(data))
     //如果本地存储购物车有数据，则把购物车的数据和当前用户购物车合并，并删除本地存储的购物车
 
+    
     if (data.shopCart != undefined && data.shopCart.length > 0) {
       Promise.all([...data.shopCart.map(item => {
         item.user_id = state.userInfo.id
@@ -148,11 +148,32 @@ export default {
         })
       })]).then(success => {
         console.log(success);
+        //在默认情况我们添加数据库的时候，添加成功数据库会默认返回一个新增的id值 给用户。
+
+
         delete data['shopCart']
         window.localStorage.setItem(state.localData, JSON.stringify(data))
+        payload.success('执行刷新购物车数据')
+        /*
+        if(success.length  == data.shopCart.length){
+          //相等带表所有数据都添加成功
+          delete data['shopCart']
+          window.localStorage.setItem(state.localData, JSON.stringify(data))
+        }else{
+          //不相等代表有数据添加失败   --->一条失败---全部都失败
+          //获取后台返回的新增id  --->执行删除---> 让已经添加的数据消失。然后告诉用户。数据添加失败---网络问题等等，从新添加
+          //deteldeShopCart()
+          delete data['shopCart']
+          window.localStorage.setItem(state.localData, JSON.stringify(data))
+
+        }
+        //对于我们来说。合并不需要那么复杂，不论成功还是失败。都删除本地存储购物车
+        */
       },err=>{
         console.log(err);
       })
+    }else{
+      state.loading = false
     }
-  }
+  },
 }

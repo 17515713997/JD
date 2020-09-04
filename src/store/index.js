@@ -8,6 +8,7 @@ import actions from "./actions"
 Vue.use(Vuex)
 
 const state = {
+  loading:false,
   urlPath: 'http://106.12.85.17:8090/public/image',
   localData:'JD_entry_data', //用于保存本地存储数据的 key
   TabBar: {
@@ -15,23 +16,11 @@ const state = {
     is_jx_TabBar: false,
   },
   userInfo:null,
-  // userInfo:{
-  //   defaddr:{id:1,user_id:'15',tel:"电话",addr:'省,市,县(乡,街道),具体地址',name:'接收人',default:1},
-  //   // defaddr:null,
-  //   id:'15',
-  //   email:'',
-  //   name:'',
-  //   qq:'',
-  //   wx:'',
-  //   img:"",
-  //   tel:'',
-  //   //autocode:''//这个值后期用户登录后，服务器会给你返回一个数值，这个数值用于用户自动登录的。当本地存储中存有这个值的时候，需要拿这个值访问自动登录接口，请求用户数据
-  // },
   //keep-leave
   keepExclude: 'Details,Cart,Payment,ConfirmOrder,Order',
   keepInclude: 'Home',
   shopCartHistory:null,//在页面渲染的时候，购物车加载的时候取以下默认值，在离开购物车页面的时候，用购物车页面的值，和当前值做对比。存在的值。对比后提交数据
-  shopCart: null,
+  shopCart: null,  //用户登录后的购物车数据
   shopCartLength:0,//购物车的数据数量
   temp:null,
   totalNum:0,//支付数量
@@ -48,7 +37,8 @@ const state = {
   areacodeHistory:'/home',   //记录一下离开页面时。的路由地址 ，默认地址为/home
   loginHistory:'/home',     //记录从那个页面跳转到登录的。
   configOrderHistory:null,  //记录离开确认订单时候的路由地址
-  allAddress:null   //  记录所有的用户地址
+  allAddress:null,   //  记录所有的用户地址
+  payMentData:null   //存储购物车/details提交的订单 
 }
 const x = new Vuex.Store({
   state,      //状态管理数据

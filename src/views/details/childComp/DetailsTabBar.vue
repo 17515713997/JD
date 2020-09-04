@@ -21,7 +21,7 @@
       <button v-on:click="shopcart">
         <span>加入购物车</span>
       </button> 
-      <button class='payload' v-on:click="$emit('to-add-order')">
+      <button class='payload' v-on:click="toOrder">
         <span >立即购买</span>
       </button >
     </div>
@@ -70,6 +70,9 @@ export default {
 
       //出错？啥子问题。。。
       //this.$emit('addshopcart')
+    },
+    toOrder(){
+      this.$parent.addOrder(1);
     }
   },
 };
@@ -84,6 +87,7 @@ export default {
     background-color:#fff;
     box-shadow: 0 -1px 1 #dedede;
     display: flex;
+    padding-top:10px;
     div.bar{
         position:static;
         min-width: 45vw;

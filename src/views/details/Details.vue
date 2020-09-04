@@ -10,7 +10,7 @@
     top: 0;
     left: 0;
     right: 0;
-    bottom: 49px;
+    bottom: 59px;
     overflow: hidden;
     .message {
       .shopInfo {
@@ -88,11 +88,31 @@
     }
   }
 }
-</style>
-<style lang="less">
-#details{
-  .drawerHeight{
-    height:60vh !important; 
+
+.selectedopen {
+  padding-bottom: 50px;
+  .selectBtnBox {
+    display: flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 40px;
+    background-color: #fff;
+    padding-bottom: 5px;
+    button {
+      flex: 1;
+      margin: 0 10px;
+      border-radius: 25px;
+      border: none;
+      outline: none;
+      background-color: red;
+      color: #fff;
+    }
+    button:nth-child(2) {
+      background-color: yellow;
+      color: #000;
+    }
   }
 }
 </style>
@@ -201,6 +221,7 @@
         :close-on-press-escape="false"
         :visible.sync="discount"
         :append-to-body="true"
+        size="70%"
       >
         <span>我来啦!</span>
       </el-drawer>
@@ -211,6 +232,8 @@
         :visible.sync="selected"
         :append-to-body="true"
         :withHeader="false"
+        custom-class="selectedopen"
+        size="70%"
       >
         <div>
           <div v-for="(item,index) in selectNorm" :key="index">
@@ -231,6 +254,13 @@
               <button @click="orderSel.order_num++">+</button>
             </div>
           </div>
+          <div class="selectBtnBox" v-if="isConfirm">
+            <button @click="addShop">添加至购物车</button>
+            <button @click="addOrder(2)">立即购买</button>
+          </div>
+          <div class="selectBtnBox" v-else>
+            <button @click="confirm">确认</button>
+          </div>
         </div>
       </el-drawer>
       <!-- 配送 -->
@@ -240,9 +270,12 @@
         :close-on-press-escape="false"
         :visible.sync="distribution"
         :append-to-body="true"
-        size='70%'
+        size="70%"
       >
-        <ul style="text-align:left;line-height:20px; font-size:14px;padding:0 10px;" v-if="$store.state.userInfo">
+        <ul
+          style="text-align:left;line-height:20px; font-size:14px;padding:0 10px;"
+          v-if="$store.state.userInfo"
+        >
           <li
             style="padding:10px 0;"
             v-for="(item,index) in allAddress"
@@ -253,9 +286,7 @@
             {{ item.takeover_addr | changeAddr}}
           </li>
         </ul>
-        <div v-else>
-          省市县三级列表菜单
-        </div>
+        <div v-else>省市县三级列表菜单</div>
       </el-drawer>
       <el-drawer
         title="服务"
@@ -264,12 +295,13 @@
         :visible.sync="service"
         :append-to-body="true"
         :withHeader="false"
+        size="70%"
       >
         <span>服务</span>
       </el-drawer>
     </scroll>
 
-    <details-tab-bar :addshopcart="addShop" :to-add-order="addOrder"></details-tab-bar>
+    <details-tab-bar :addshopcart="addShop" :toaddorder="addOrder"></details-tab-bar>
   </div>
 </template>
 
@@ -287,7 +319,13 @@ import DetailsTabBar from "./childComp/DetailsTabBar";
 import { getGoodsId } from "network/details";
 import { get_user_address } from "network/address";
 import { addShopCart } from "network/shopCart";
-import { GoodsInfo, ShopInfo, SelectNorm, Evaluate } from "common/utils";
+import {
+  GoodsInfo,
+  ShopInfo,
+  SelectNorm,
+  Evaluate,
+  orderConfirmData,
+} from "common/utils";
 // import { GoodsInfo, ShopInfo} from "common/utils";
 export default {
   name: "Details",
@@ -313,10 +351,12 @@ export default {
       shopCategory: "", //商铺是个体还是自营
       addr: "", // 在本地存储取到的地址
       free_freight: 0, // 是否免运费  0 不免  1 免
+      isConfirm: true,
       orderSel: {
         norm: {},
         order_num: 1,
       },
+      confirmData: {}, //用于存储当前详情页提交的数据
     };
   },
   components: {
@@ -397,9 +437,9 @@ export default {
     allAddress() {
       return this.$store.state.allAddress;
     },
-    localPath(){
-      return this.$store.state.localData
-    }
+    localPath() {
+      return this.$store.state.localData;
+    },
   },
   created() {
     // console.log(this.$router);
@@ -431,7 +471,6 @@ export default {
         // 获取轮播数据
         this.goodsImg = res.data.goodsData.img_detalis_list;
         // 商品数据
-
         this.detailsGoods = new GoodsInfo(
           res.data.goodsData,
           res.data.shopData
@@ -445,9 +484,14 @@ export default {
           res.data.relationGoods
         );
         // this.getNorm(res.data.norms,res.data.relationGoods)
-
         //获取评价
         this.detailsEvaluate = new Evaluate(res.data.sevaluateDate);
+        //获取立即购买需要提交的数据信息
+        this.confirmData = new orderConfirmData(
+          res.data.goodsData,
+          res.data.shopData
+        );
+
         console.log(this.detailsEvaluate);
         //自营 还是个体
 
@@ -491,7 +535,7 @@ export default {
     },
     changeAddr(val) {
       //存到本地存储中 ， 存储的数据，不去存截取后的值，直接存原值
-      this.addr = val
+      this.addr = val;
       let data = window.localStorage.getItem(this.localPath);
       if (data != null) {
         data = JSON.parse(data);
@@ -504,20 +548,24 @@ export default {
     },
     getAddr() {
       let data = window.localStorage.getItem(this.localPath);
-      if (data != null && data != '') {
+      if (data != null && data != "") {
         data = JSON.parse(data);
-        if (data.orderAddr != undefined && data.orderAddr != null &&data.orderAddr != '') {
+        if (
+          data.orderAddr != undefined &&
+          data.orderAddr != null &&
+          data.orderAddr != ""
+        ) {
           this.addr = data.orderAddr;
         } else {
           this.addr = "北京市,北京市,昌平区,";
           data.orderAddr = "北京市,北京市,昌平区,";
-        } 
+        }
       } else {
         this.addr = "北京市,北京市,昌平区,";
         data = {};
         data.orderAddr = "北京市,北京市,昌平区,";
       }
-      // console.log(this.addr);
+      console.log(this.addr);
       window.localStorage.setItem(this.localPath, JSON.stringify(data));
     },
     setDate(nowtime = new Date(), val = 1) {
@@ -569,6 +617,7 @@ export default {
       }
       if (val == "selected") {
         this.selected = true;
+        this.isConfirm = true;
       }
       if (val == "distribution") {
         this.distribution = true;
@@ -630,15 +679,24 @@ export default {
       //需要计算取值
       shopCart.norm = JSON.stringify(this.orderSel.norm); //传递json串
       shopCart.takeover_addr = this.addr;
+      //添加
+      console.log(this.detailsGoods);
+      shopCart.shop_id = this.shopInfo.shop_id;
+      // shopCart.goods_name = this.detailsGoods.title
+      // shopCart.goods_name = this.detailsGoods.title
+      // shopCart.goods_name = this.detailsGoods.title
+      // console.log(shopCart);
 
+      // goods_name: "南极人女鞋夏季气垫鞋休闲鞋女士飞织透气女时尚学生板鞋运动跑步鞋韩版百搭潮鞋网鞋镂空"
+      // money_now: "73"
+      // money_old: "80"
+      //如果用户存在
       if (this.$store.state.userInfo) {
         //请求购物车
         addShopCart(shopCart).then((res) => {
-          
-          if(res.code != 200) return console.log(res.msg);
-
+          if (res.code != 200) return console.log(res.msg);
           //重新获取购物车数据
-          this.$store.dispatch('getShopCart', this.$store.state.userInfo.id)
+          this.$store.dispatch("getShopCart", this.$store.state.userInfo.id);
         });
       } else {
         //没有用户的情况下。也能添加购物车
@@ -657,7 +715,6 @@ export default {
               ) {
                 data.shopCart[i].num += shopCart.num * 1;
                 break;
-                // continue;
               }
               temp++;
               console.log(temp);
@@ -679,8 +736,37 @@ export default {
         window.localStorage.setItem(this.localPath, JSON.stringify(data));
       }
     },
-    addOrder() {
+    addOrder(val) {
       console.log("执行了添加订单");
+      if (val == 1) {
+        this.selected = true;
+        this.isConfirm = false;
+      } else {
+        this.confirm();
+      }
+    },
+    confirm() {
+      // 确认console.log('被执行');
+      this.confirmData.num = this.orderSel.order_num;
+      //需要计算取值
+      this.confirmData.norm = JSON.stringify(this.orderSel.norm);
+      this.confirmData.takeover_addr = this.addr;
+      this.$store.state.payMentData = [this.confirmData];
+      //把 payMentData 的数据变成json数据并 提交到本地存储中
+
+      //做存储   把数据存储到本地存储中
+
+      let data = window.localStorage.getItem(this.$store.state.localData);
+      data =
+        data != undefined && data != null && data != ""
+          ? JSON.parse(data)
+          : {};
+      //为 本地存储中添加 payMentData ， 值为提交到confirmOrder中的数据
+      data.payMentData = this.$store.state.payMentData
+      //存储
+      window.localStorage.setItem(this.$store.state.localData,JSON.stringify(data))
+
+      this.$router.push("/confirm_order/aaa");
     },
     //查看本地存储是否存有购物车数据
     lookLocalStorage() {
@@ -689,7 +775,7 @@ export default {
         let data = window.localStorage.getItem(this.localPath);
         console.log(data);
         if (data == null || data == "") return;
-        data = JSON.parse(data)
+        data = JSON.parse(data);
         if (!data.shopCart) return;
         this.calculationStorageShopNum(data.shopCart);
       }
@@ -707,20 +793,18 @@ export default {
       return str + Number(val).toFixed(2);
     },
     changeEvaluate(val) {
-      // console.log(val);
+      console.log(val);
       return val;
     },
     changeAddr(val) {
       //去掉重复值的操作。。。。。
       // console.log(val);
-      let addr = val.split(",")
-      // console.log(addr);
+      let addr = val.split(",");
       let temp = [];
-      for(let i = 0 ; i < addr.length ; i++){
-        if(temp.indexOf(addr[i]) == -1){
-          temp.push(addr[i])
+      for (let i = 0; i < addr.length; i++) {
+        if (temp.indexOf(addr[i]) == -1) {
+          temp.push(addr[i]);
         }
-        // console.log(temp);
       }
       addr = temp.join("");
       return addr;

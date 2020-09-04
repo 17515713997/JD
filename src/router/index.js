@@ -23,7 +23,7 @@ const Order = () => import('views/order/Order')
 const Payment = () => import('views/order/Payment')
 const routes = [
   {
-    path:'',
+    path: '',
     redirect: "/home"
   },
   {
@@ -87,7 +87,7 @@ const routes = [
     meta: {
       title: "所有评价"
     },
-    component:()=> import('views/details/childComp/AllEvaluate'),
+    component: () => import('views/details/childComp/AllEvaluate'),
   },
   {
     path: '/login',
@@ -105,8 +105,8 @@ const routes = [
   },
   //国际区号接口
   {
-    path:'/area_code',
-    component:()=> import('views/area_code/AreaCode')
+    path: '/area_code',
+    component: () => import('views/area_code/AreaCode')
   },
   {
     path: '/shortMsg/:data',
@@ -132,8 +132,8 @@ const routes = [
     component: ConfirmOrder
   },
   {//所有地址
-    path: '/allAddr', 
-    meta:{
+    path: '/allAddr',
+    meta: {
       title: "所有地址"
     },
     component: AllAddr
@@ -164,7 +164,7 @@ const routes = [
     meta: {
       title: "店铺页"
     },
-    component:() => import('views/shops/Shops')
+    component: () => import('views/shops/Shops')
   },
 ]
 
@@ -177,11 +177,22 @@ routers.beforeEach((to, from, next) => {
   store.state.SKnavigation = to.path
   if (to.path == from.path) return
   for (let item in store.state.TabBar) {
-    console.log(item);
+    // console.log(item);
     store.state.TabBar[item] = false
   }
   if (to.path == '/home' || to.path == '/category' || to.path == '/cart' || to.path == '/profile') store.state.TabBar.is_jd_TabBar = true
   else if (to.path.lastIndexOf('/jx') != -1) store.state.TabBar.is_jx_TabBar = true
+
+  //如果你即将访问的路由地址 包含 confirm_order 的话。我就记录一下 来的路由地址
+  // if(to.path.split('/')[1] == 'confirm_order'){store.state.areacodeHistory = from.path}
+
+  if (to.path.indexOf('/confirm_order') != -1) {
+    if ( from.path.indexOf('/newAddr') == -1 && from.path.indexOf('/allAddr') == -1 && from.path.indexOf('/payment') == -1 && from.path.indexOf('/login') == -1) {  
+      store.state.areacodeHistory = from.path
+    }
+  }
+
+
   next();
 })
 export default routers

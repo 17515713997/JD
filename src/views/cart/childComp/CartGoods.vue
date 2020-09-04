@@ -14,7 +14,7 @@
             <img :src="$store.state.urlPath+'/goods/'+obj.img_cover" alt="图片" />
           </div>
           <div class="right">
-            <p class="title">title：{{obj.goods_name}}</p>
+            <p class="title">{{obj.goods_name}}</p>
 
             <div class="norm-box" v-on:click.stop='checkNorm(obj)'>
               <p class="norm">
@@ -49,12 +49,6 @@ export default {
       type: String,
       default: "",
     },
-    // goods:{
-    //   type:Array,
-    //   default(){
-    //     return []
-    //   }
-    // }
   },
   data() {
     return {

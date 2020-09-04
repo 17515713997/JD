@@ -43,7 +43,7 @@
       .user {
         flex: 2;
         font-weight: bold;
-        margin-left:10px;
+        margin-left: 10px;
       }
       .evaluateTime {
         flex: 1;
@@ -76,9 +76,9 @@
           min-width: 21vw;
           max-width: 24vw;
           width: 22vw;
-          margin: 0 2px;
+          margin: 0 3px;
           overflow: hidden;
-          border: 1px solid red;
+          border-radius: 10px;
           img {
             float: left;
           }
@@ -90,7 +90,7 @@
     display: flex;
     margin-top: 10px;
     justify-content: center;
-    margin-bottom:10px;
+    margin-bottom: 10px;
     button {
       height: 40px;
       border-radius: 10px;
@@ -113,8 +113,12 @@
         <i>98%</i>
       </span>
     </h1>
-    <ul class="content" v-if='Object.keys(evaluate).length >0'>
-      <li v-for="(item,index) in showEvaluate" :key="index" v-on:click="$store.commit('ROUTERTO','/allevaluate/'+cDetailsId)">
+    <ul class="content" v-if="Object.keys(evaluate).length >0">
+      <li
+        v-for="(item,index) in showEvaluate"
+        :key="index"
+        v-on:click="$store.commit('ROUTERTO','/allevaluate/'+cDetailsId)"
+      >
         <div class="title">
           <img :src="$store.state.urlPath+'/evaluate/'+item.headPortrait" alt />
           <span class="user">{{item.username}}</span>
@@ -123,7 +127,7 @@
         <div class="value">{{item.val}}</div>
         <div class="evaluateImg">
           <ul>
-            <li v-for="(i,index) in item.evaluationImg" :key="index" v-on:click.stop="checkImg(i)" >
+            <li v-for="(i,index) in item.evaluationImg" :key="index" v-on:click.stop="checkImg(i)">
               <img :src="$store.state.urlPath+'/evaluate/'+i" alt />
             </li>
           </ul>
@@ -131,7 +135,10 @@
       </li>
     </ul>
     <div class="more">
-      <button v-if="Object.keys(evaluate).length > 2" v-on:click="$store.commit('ROUTERTO','/allevaluate/'+cDetailsId)">查看更多评价</button>
+      <button
+        v-if="Object.keys(evaluate).length > 2"
+        v-on:click="$store.commit('ROUTERTO','/allevaluate/'+cDetailsId)"
+      >查看更多评价</button>
     </div>
   </div>
 </template>
@@ -146,15 +153,13 @@ export default {
         return {};
       },
     },
-    cDetailsId:{
-      type:String,
-      default:''
-    }
+    cDetailsId: {
+      type: String,
+      default: "",
+    },
   },
   data() {
-    return {
-      
-    };
+    return {};
   },
   computed: {
     //计算
@@ -186,9 +191,9 @@ export default {
   },
   methods: {
     //事件
-    checkImg(img){
+    checkImg(img) {
       console.log(`你点击了图片<${img}>`);
-    }
+    },
   },
   watch: {
     //监听

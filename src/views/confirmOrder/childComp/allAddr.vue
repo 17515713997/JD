@@ -17,7 +17,7 @@
               <strong></strong>
             </p>
             <p style="font-size:12px;">
-             <ul>
+              <ul>
                 <li>{{i.takeover_name}}</li>
                 <li>{{i.takeover_tel}}</li>
                 <li>{{i.takeover_addr}}</li>

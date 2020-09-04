@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import axios from 'axios'
-import VueAxios from 'vue-axios'
+import axios from 'axios'   //局部的axios插件
+import VueAxios from 'vue-axios' //可以设置axios为Vue全局使用的插件
 Vue.use(VueAxios, axios)
 //get请求
 export function request(config){
@@ -37,7 +37,7 @@ export function requestPost(config){
     //请求拦截
     instance.interceptors.request.use(config=>{
         //.....
-        // console.log(config);
+        console.log(config);
         return config
     })
 
