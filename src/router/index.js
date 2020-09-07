@@ -164,7 +164,48 @@ const routes = [
     meta: {
       title: "店铺页"
     },
-    component: () => import('views/shops/Shops')
+    component: () => import('views/shops/Shops'),
+    children:[
+      {
+        path:"/",
+        redirect:"page1"
+      },
+      {
+        path:"page1",
+        name:"jingxuan",
+        meta:{
+          title:"精选"
+        }
+      },
+      {
+        path:"page2",
+        name:"jingxuan",
+        meta:{
+          title:"精选"
+        }
+      },
+      {
+        path:"page3",
+        name:"jingxuan",
+        meta:{
+          title:"精选"
+        }
+      },
+      {
+        path:"page4",
+        name:"jingxuan",
+        meta:{
+          title:"精选"
+        }
+      },
+      {
+        path:"page5",
+        name:"jingxuan",
+        meta:{
+          title:"精选"
+        }
+      }
+    ]
   },
 ]
 

@@ -5,9 +5,9 @@
             <img slot="item-icon" src="" />
             <div slot="item-text">客服</div>
         </tab-bar-item>
-        <tab-bar-item>
+        <tab-bar-item >
             <img slot="item-icon" src="" />
-            <div slot="item-text">店铺</div>
+            <div slot="item-text" >店铺</div>
         </tab-bar-item>
         <tab-bar-item path='/cart'>
             <img slot="item-icon" src="" />
@@ -62,6 +62,9 @@ export default {
     }
   },
   methods: {
+    // p(){
+    //   this.$store.commit('/shops')
+    // },
     //事件
     shopcart(){
       // console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
