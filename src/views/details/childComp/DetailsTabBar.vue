@@ -7,7 +7,8 @@
         </tab-bar-item>
         <tab-bar-item >
             <img slot="item-icon" src="" />
-            <div slot="item-text" >店铺</div>
+            <div slot="item-text" 
+            @click="toStore" >店铺</div>
         </tab-bar-item>
         <tab-bar-item path='/cart'>
             <img slot="item-icon" src="" />
@@ -51,7 +52,7 @@ export default {
     },
     user(){
       return this.userInfo!= "" && this.userInfo != null && this.userInfo != undefined
-    }
+    },
   },
   created() {
     //创建
@@ -62,6 +63,11 @@ export default {
     }
   },
   methods: {
+    toStore(path) {
+      console.log("进入店铺",path);
+      this.$store.commit("ROUTERTO",'/shops/'+path)
+      //跳转页面，进入店铺页面。后调用数据库，请求店铺数据
+    },
     // p(){
     //   this.$store.commit('/shops')
     // },

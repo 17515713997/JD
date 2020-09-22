@@ -115,6 +115,66 @@
     }
   }
 }
+.cai {
+  float: left;
+  width: 100%;
+  li {
+    margin-top: 20px;
+    float: left;
+    width: 33%;
+    // height: 100px;
+  }
+}
+.el-tabs__nav{
+  width:100%;
+}
+.el-tabs__item{
+  width:33%;
+}
+.el-tabs__active-bar{
+  width:100px !important;
+}
+.el-tabs__header{
+  margin:0;
+}
+.mod_tit_line{
+    border-top: 1px solid #ddd;
+    text-align: center;
+    height: 6px;
+    margin: 30px 0 10px;
+    h3{
+      width:80px;
+      font-size: 14px;
+      position: relative;
+      top: -7px;
+      left: 40%;
+      background: #fff;
+    }
+}
+.guigeleft{
+  width:30%;
+  float: left;
+  li{
+    border:1px solid #ccc;
+    width:100%;
+    height:30px;
+    line-height:30px;
+    margin-left:3px;
+    font-size:12px;
+  }
+}
+.guigeright{
+  width:70%;
+  float: right;
+  li{
+    border:1px solid #ccc;
+    width:96%;
+    height:30px;
+    line-height:30px;
+    margin-left:3px;
+    font-size:12px;
+  }
+}
 </style>
 <template>
   <div id="details" v-loading="loading">
@@ -195,22 +255,81 @@
       <shops-info :shopsinfo="shopInfo"></shops-info>
 
       <!-- 推荐 -->
-      <div style="height:800px;background-color:#fff;margin-top:10px;">
-        <h1>推荐</h1>请求数据库 获取一些与当前商品相关 或者类似的数据
-        <hr />推荐组件
-        <ul>
-          <li>推荐</li>
-          <li>猜你喜欢</li>
+      <div style="height:660px;background-color:#fff;margin-top:10px;">
+        <h3 style="text-align:left;padding-left:10px">猜你喜欢</h3>
+        <ul class="cai" >
+          <li v-for="(item,index) in alllla" :key="index" >
+             <img :src="path+item.img_cover" alt="" style="float: left;width:140px;height:140px">
+            <p style="height:20px;line-height:20px;overflow: hidden;font-size:14px;float: left;">{{item.name}}</p>
+            <span style="color:red;display: block;text-align: left;width: 100%;">￥{{item.money_now}}</span>
+          </li>
         </ul>
       </div>
       <!-- 详情 -->
       <div style="height:800px;background-color:#fff;margin-top:10px;">
-        <h1>详情 = 文字 + 图片的组合</h1>
-        <ul>
-          <li>商品介绍</li>
-          <li>规格参数</li>
-          <li>售后服务</li>
-        </ul>
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+          <el-tab-pane label="商品介绍" name="first">
+            <img  src="../../assets/imgg/guige.jpg" width="430" height="1000">
+          </el-tab-pane>
+          <el-tab-pane label="规格参数" name="second">
+            <div  class="mod_tit_line">
+              <h3>包装清单</h3>  
+            </div>
+            <div  style="text-align: left;font-size: 12px;padding-left: 15px;">
+              某某*1
+            </div>
+            <div  class="mod_tit_line">
+              <h3>商品参数</h3>  
+            </div>
+            <div >
+              <ul class="guigeleft">
+                <li>商品编号</li>
+                <li>品牌</li>
+                <li>认证型号</li>
+                <li>产品型号</li>
+                <li>最大容积</li>
+                <li>加热方式</li>
+                <li>加热功率</li>
+              </ul>
+              <ol class="guigeright">
+                <li>1</li>
+                <li>1</li>
+                <li>1</li>
+                <li>1</li>
+                <li>1</li>
+                <li>1</li>
+                <li>1</li>
+              </ol>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="售后保障" name="third">
+            <div  style="font-size:12px;padding-top: 20px;text-align: left;">本产品全国联保，享受三包服务，质保期为：1年质保</div>
+             <div  class="mod_tit_line">
+              <h3>服务承诺</h3>  
+            </div>
+            <div  style="text-align: left;font-size: 12px;padding-left: 15px;"> </div>
+            <div  style="font-size:12px">
+              京东商城向您保证所售商品均为正品行货，京东自营商品开具机打发票或电子发票。凭质保证书及京东商城发票，可享受全国联保服务（奢侈品、钟表除外；奢侈品、钟表由京东联系保修，享受法定三包售后服务），与您亲临商场选购的商品享受相同的质量保证。京东商城还为您提供具有竞争力的商品价格和
+              <a href=""  style="color:red">运费政策</a>，请您放心购买！
+              注：因厂家会在没有任何提前通知的情况下更改产品包装、产地或者一些附件，本司不能确保客户收到的货物与商城图片、产地、附件说明完全一致。只能确保为原厂正货！并且保证与当时市场上同样主流新品一致。若本商城没有及时更新，请大家谅解！
+            </div>
+            <div  class="mod_tit_line">
+              <h3>权利声明</h3>  
+            </div>
+            <div  style="font-size:12px">
+              京东商城上的所有商品信息、客户评价、商品咨询、网友讨论等内容，是京东商城重要的经营资源，未经许可，禁止非法转载使用。        
+            </div>
+            <div  class="mod_tit_line">
+              <h3>价格声明</h3>  
+            </div>
+            <div  style="font-size:12px;text-align:left">
+              <p>1、京东价为商品的销售价，是您最终决定是否购买商品的依据。</p>    
+              <p>2、商品展示的划横线价格为参考价，该价格可能是品牌专柜标价、商品吊牌价或由品牌供应商提供的正品零售价（如厂商指导价、建议零售价等）或该商品在京东平台上曾经展示过的销售价；由于地区、时间的差异性和市场行情波动，品牌专柜标价、商品吊牌价等可能会与您购物时展示的不一致，该价格仅供您参考。</p>   
+              <p>3、如无特殊说明，折扣指销售商在原价、或划线价（如品牌专柜标价、商品吊牌价、厂商指导价、厂商建议零售价）等某一价格基础上计算出的优惠比例或优惠金额；如有疑问，您可在购买前联系销售商进行咨询。</p> 
+              <p>4、商品促销信息以商品详情页“促销”栏中的信息为准；商品的具体售价以订单结算页价格为准；如您发现活动商品售价或促销信息有异常，建议购买前先联系销售商咨询。</p>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
       </div>
 
       <!-- 遮罩菜单 -->
@@ -319,6 +438,7 @@ import DetailsTabBar from "./childComp/DetailsTabBar";
 import { getGoodsId } from "network/details";
 import { get_user_address } from "network/address";
 import { addShopCart } from "network/shopCart";
+import { goods_all } from "network/details";
 import {
   GoodsInfo,
   ShopInfo,
@@ -357,6 +477,8 @@ export default {
         order_num: 1,
       },
       confirmData: {}, //用于存储当前详情页提交的数据
+      activeName: 'first',
+      path: "http://106.12.85.17:8090/public/image/goods/",
     };
   },
   components: {
@@ -449,6 +571,7 @@ export default {
     this.getGoods(this.detailsId);
     this.getAddr();
     this.lookLocalStorage();
+    this.goods_all();
   },
   watch: {},
   mounted() {
@@ -461,6 +584,15 @@ export default {
     // console.log(this.tabCenter);
   },
   methods: {
+    goods_all() {
+      goods_all().then((res) => {
+        this.alllla= res.data.slice(0, 9)
+        console.log(this.alllla)
+      });
+    },
+      handleClick(tab, event) {
+        console.log(tab, event);
+      },
     //通过id获取商品的方法
     getGoods(data) {
       //页面等待
@@ -758,13 +890,14 @@ export default {
 
       let data = window.localStorage.getItem(this.$store.state.localData);
       data =
-        data != undefined && data != null && data != ""
-          ? JSON.parse(data)
-          : {};
+        data != undefined && data != null && data != "" ? JSON.parse(data) : {};
       //为 本地存储中添加 payMentData ， 值为提交到confirmOrder中的数据
-      data.payMentData = this.$store.state.payMentData
+      data.payMentData = this.$store.state.payMentData;
       //存储
-      window.localStorage.setItem(this.$store.state.localData,JSON.stringify(data))
+      window.localStorage.setItem(
+        this.$store.state.localData,
+        JSON.stringify(data)
+      );
 
       this.$router.push("/confirm_order/aaa");
     },

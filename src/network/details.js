@@ -18,3 +18,11 @@ export function getAllEvaluate(id){
         }
     })
 }
+export function goods_all(id) {
+    return request({
+        url: "/vuedemo/get_goods",
+        params:{ 
+            goods_id:id
+        }
+    })
+}

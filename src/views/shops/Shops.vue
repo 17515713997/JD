@@ -84,6 +84,12 @@
     }
   }
 }
+.el-tabs__nav-wrap{
+  background: none;
+}
+.el-icon-arrow-left:before{
+  content: "";
+}
 </style>
 <template>
   <div class="Store">
@@ -115,7 +121,15 @@
       </div>
       <div class="bottom">
           <input type="text" placeholder="搜索" style="text-align:center" @click="keywords">
-          <ul>
+          <el-tabs v-model="activeName" @tab-click="handleClick"  style="float:right;margin-right: 13px;">
+            <el-tab-pane label="精选" name="first"> 精选</el-tab-pane>
+            <el-tab-pane label="商品" name="second">商品</el-tab-pane>
+            <el-tab-pane label="新品" name="third">新品</el-tab-pane>
+            <el-tab-pane label="买家秀" name="fourth">买家秀</el-tab-pane>
+            <el-tab-pane label="动态" name="thirdq">动态</el-tab-pane>
+          </el-tabs>
+          <!-- <ul>
+            "精选","商品","新品", "买家秀", "动态"
             <li v-for="(item,index) in list" :key="item.id" :class="{active:num==index}" @click="getNum(index)">
               {{item}}
             </li>
@@ -124,12 +138,7 @@
             <div v-for='(itemCon,index) in tabContents' :key="index" v-show="index == num">
               {{itemCon}}
             </div>
-            <!-- <div v-show=" num == false">1</div>
-            <div v-show=" num == false">2</div>
-            <div v-show=" num == false">3</div>
-            <div v-show=" num == false">4</div>
-            <div v-show=" num == false">5</div> -->
-          </div>
+          </div> -->
         </div>
     </div>
   </div>
@@ -143,9 +152,10 @@ export default {
   name: "Shops",
   data() {
    return {
-          num: 0,
-          list: [ "精选","商品","新品", "买家秀", "动态"],
-          tabContents: ["精选", "商品", "新品", "买家秀","动态"],
+      activeName: 'first',
+          // num: 0,
+          // list: [ "精选","商品","新品", "买家秀", "动态"],
+          // tabContents: ["精选", "商品", "新品", "买家秀","动态"],
         }
   },
   components: {
@@ -155,33 +165,7 @@ export default {
   },
   computed: {},
   created() {
-    let a = [
-      {
-        goods_id: "7",
-        goods_name:
-          "舌里%20蛋黄酥12枚装雪媚娘饼干蛋糕早餐代餐网红面包休闲零食小吃500g/箱",
-        money_now: "19.9",
-        money_old: "25",
-        norm: "{}",
-        num: 1,
-        shop_id: 8,
-        takeover_addr: "北京市,北京市,昌平区,",
-        user_id: 14,
-      },
-      {
-        goods_id: "21",
-        goods_name:
-          "南极人女鞋夏季气垫鞋休闲鞋女士飞织透气女时尚学生板鞋运动跑步鞋韩版百搭潮鞋网鞋镂空",
-        money_now: "73",
-        money_old: "80",
-        norm: "{}",
-        num: 1,
-        shop_id: 4,
-        takeover_addr: "北京市,北京市,昌平区,",
-        user_id: 14,
-      },
-    ];
-    console.log(a);
+    
   },
   activated() {
     //激活
@@ -193,6 +177,9 @@ export default {
     //渲染
   },
   methods: {
+     handleClick(tab, event) {
+        console.log(tab, event);
+      },
     keywords(){
       this.$router.push("/keywords")
     },
