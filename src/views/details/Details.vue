@@ -117,6 +117,7 @@
 }
 .cai {
   float: left;
+  margin-left:5px;
   width: 100%;
   li {
     margin-top: 20px;
@@ -255,7 +256,7 @@
       <shops-info :shopsinfo="shopInfo"></shops-info>
 
       <!-- 推荐 -->
-      <div style="height:660px;background-color:#fff;margin-top:10px;">
+      <div style="height:660px;background-color:#fff;margin-top:10px;border-radius: 15px;">
         <h3 style="text-align:left;padding-left:10px">猜你喜欢</h3>
         <ul class="cai" >
           <li v-for="(item,index) in alllla" :key="index" >
@@ -342,7 +343,7 @@
         :append-to-body="true"
         size="70%"
       >
-        <span>我来啦!</span>
+        <span>奥利给!</span>
       </el-drawer>
       <el-drawer
         title="已选"
@@ -479,6 +480,8 @@ export default {
       confirmData: {}, //用于存储当前详情页提交的数据
       activeName: 'first',
       path: "http://106.12.85.17:8090/public/image/goods/",
+      // aa:false,
+      // bb:true,
     };
   },
   components: {
@@ -571,7 +574,11 @@ export default {
     this.getGoods(this.detailsId);
     this.getAddr();
     this.lookLocalStorage();
-    this.goods_all();
+    this.goods_all(); 
+    // setTimeout(() =>{
+    //   this.aa = true;
+    // },1000)
+    //模拟当前的店铺id
   },
   watch: {},
   mounted() {

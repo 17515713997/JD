@@ -17,8 +17,6 @@
         >
           <div @click="tabControlClick('hot')" :class="{active:controlIndex == 'hot'}">
             <span>热门推荐</span>
-            --
-            <span>0</span>
           </div>
         </feature-tab-control>
       </scroll>

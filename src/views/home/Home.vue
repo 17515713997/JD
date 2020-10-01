@@ -26,6 +26,36 @@
       <!-- 功能视图 -->
       <home-feature :cfeature="feature" @cfeatureAll="routerTo('/home/feature')"></home-feature>
       <hr />
+      <div style="width:100%;background:#f7f7f7;float:left">
+        <div  style="width:100%;background:#f7f7f7;float:left">
+          <span style="float: left;padding:10px">京东秒杀</span>
+          <span style="float: right;padding:10px;color:red">更多秒杀</span>
+        </div>
+        <div style="width:200%;float:left" v-if=aa>
+          <ul style="width:100%;float:left" @touchstart='touchstart' @touchmove='touchmove'>
+            <li style="float:left;width:60px;margin-left:20px;" v-for="(item,index) in miaosha" :key="index">
+              <img :src="pathhtap+item.img_cover"  style="float: left;width:60px;height:60px">
+              <p style="float:left;width:100%;padding-top:10px;color:red">￥{{item.money_now}}</p>
+              <s style="float:left;width:100%;padding-top:5px;color:#ccc">￥{{item.money_old}}</s>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div style="width:100%;float:left;padding:10px 0;">
+        <img src="../../assets/imgg/xinren.png" width="100%" height="100%">
+      </div>
+      <div style="width:100%;float:left;padding:10px 0;">
+        <img src="../../assets/imgg/yiyuan.webp" width="100%" height="100%">
+      </div>
+      <div style="width:100%;float:left;padding:10px 0;">
+        <img src="../../assets/imgg/ri.jpg" width="100%">
+        <ul style="width:100%;float:left">
+          <li style="float:left;width:25%;" v-for="(item,index) in Arra" :key="index">
+            <h3 style="background: linear-gradient(to right, red, blue);-webkit-background-clip: text;color: transparent;"> {{item}}</h3>
+            <!-- <img :src="item.img" alt=""> -->
+          </li>
+        </ul>
+      </div>
       <div>
         <button style="width:100%" @click="changeDirection">改变商品数据排列</button>
       </div>
@@ -63,6 +93,9 @@ import { ROUTERTO, SET_USERINFO } from "store/mutation-types";
 
 //引入网络请求模块部分组件/方法
 import { getHomeBanner, getFeature } from "network/home";
+
+import { goods_all } from "network/details";
+
 //取商品数据
 import { getGoods } from "network/goods";
 import { autoLand } from "network/user";
@@ -70,7 +103,15 @@ export default {
   name: "Home",
   data() {
     return {
+      aa:false,
+      Arra:["免息星球","每日特价","品牌闪购","京东直播","排行榜","拍拍好物","新品首发","发现好货"],
+      // Arra:{
+      //   name:["免息星球","每日特价","品牌闪购","京东直播","排行榜","拍拍好物","新品首发","发现好货"],
+      //   name1:["白条免息购","9块9疯抢","汇大牌好价","边看边买","热销推荐","二手优品","京东小魔方","教你买买买"]
+      //   img:["../../assets/imgg/img1.jpg","../../assets/imgg/img2.jpg","../../assets/imgg/img3.jpg","../../assets/imgg/img4.jpg","../../assets/imgg/img5.jpg","../../assets/imgg/img6.jpg","../../assets/imgg/img7.jpg","../../assets/imgg/img8.jpg"]
+      // },
       path: "http://106.12.85.17:8090/public/image",
+      pathhtap: "http://106.12.85.17:8090/public/image/goods/",
       banners: null,
       feature: [],
       input: "",
@@ -104,6 +145,8 @@ export default {
           //精确查找
         },
       },
+      positionX:0,
+      positionY:0,
     };
   },
   components: {
@@ -114,6 +157,7 @@ export default {
     HomeFeature,
   },
   created() {
+    console.log(this.userInfo)
     //vue实例在创建时的钩子函数
     //页面在创建的时候，我们需要请求数据
     this.getHomeBanner();
@@ -121,6 +165,10 @@ export default {
     this.getFeature(1);
     this.getGoodsMax("recommend");
     this.getGoodsMax("news");
+    this.goods_all();
+    setTimeout(() =>{
+      this.aa = true;
+    },1000)
   },
   activated() {
     //在组件激活的时候，调整滚动条的位置。
@@ -145,13 +193,23 @@ export default {
     localPath() {
       return this.$store.state.localData;
     },
+    userInfo(){
+      return this.$store.state.userInfo
+    },
   },
   methods: {
     //取banner的数据
     getHomeBanner() {
       getHomeBanner().then((res) => {
-        if(res.data != 200) return;
+        // if(res.data != 200) return;
         this.banners = res.data;
+        console.log(this.banners);
+      });
+    },
+    goods_all() {
+      goods_all().then((res) => {
+        this.miaosha= res.data.slice(15, 25)
+        console.log(this.miaosha)
       });
     },
     //定义功能视图的数据
@@ -233,6 +291,24 @@ export default {
         this.getShopCart(res.data.user.id);
       });
     },
+    touchstart (e) {
+      // 如果你要阻止点击事件，请反注释下一行代码
+      // e.preventDefault()
+      this.startX = e.touches[0].clientX
+      console.log(this.startX)
+      this.startY = e.touches[0].clientY
+      console.log(this.startY)
+    },
+    touchmove (e) {
+      // e.preventDefault()
+      this.moveX = e.touches[0].clientX
+       console.log(this.moveX)
+      this.moveY = e.touches[0].clientY
+       console.log(this.moveY)
+      this.startX - this.moveX <= 0 ? console.log('你在往右滑') : console.log('你在往左滑')
+      //if (this.startX - this.moveX <= -100) { // 右滑触发
+      // }
+    }    
   },
   mounted() {
     // 使用防抖方法，放置图片刷新被多次循环调用，在指定事件内，如果没有图片加载完成，我们在刷新scroll高度
@@ -257,7 +333,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style scoped lang="less">
 #home {
   /* padding-top: 44px; */
   height: 100vh;
@@ -314,4 +390,14 @@ export default {
 .tabContent div ul li img {
   width: 30%;
 }
+// .center{
+//   div{
+//     div{
+//       input{
+//         border-radius: 20px;
+//         height:20px;
+//       }
+//     }
+//   }
+// }
 </style>

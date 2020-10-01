@@ -64,3 +64,11 @@ export function regPhone1(data){
         data
     })
 }
+
+
+export function upDataUserInfo(data) {
+    return requestPost({
+        url: "/vuedemo/update_userdet",
+        data
+    })
+}

@@ -29,3 +29,17 @@ export function getOrderbyOrderId(data){
         }
     })
 }
+
+export function getOrderState(data){
+    return requestPost({
+        url:'vuedemo/update_order_state',
+        data
+    })
+}
+
+export function getOrder(data){
+    return requestPost({
+        url:'/vuedemo/get_order',
+        data
+    })
+}

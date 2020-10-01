@@ -15,7 +15,7 @@
           <span>你的订单将在23小时59分内未支付将被取消，请尽快完成支付</span>
           <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false">继续支付</el-button>
-            <el-button type="primary" @click="paygo">确认离开</el-button>
+            <el-button type="primary" @click="likai">确认离开</el-button>
           </span>
         </el-dialog>
       </div>
@@ -162,7 +162,7 @@
 <script>
 import navbar from "components/common/navbar/NavBar";
 import scroll from "components/contents/scroll/Scroll";
-import { getOrderbyOrderId } from "network/order";
+import { getOrderbyOrderId,getOrderState } from "network/order";
 export default {
   name: "pay",
   data() {
@@ -188,7 +188,8 @@ export default {
     this.order_id = this.$route.params.order_id;
     console.log(this.$route);
     console.log(this.order_id);
-    this.getPayMentOrder();
+   
+    this.getPayMentOrder();   
   },
   activated() {},
   deactivated() {},
@@ -206,10 +207,19 @@ export default {
         this.goods = res.data;
       });
     },
+    likai(){
+      getOrderState({order_id:this.order_id,state:1}).then((res) => {
+        console.log(res);
+      });
+      this.$router.push("/paygo");
+    },
     paygo() {
       this.dialogVisible = false;
-      // this.$router.push("/zf");
-      alert("待支付")
+      getOrderState({order_id:this.order_id,state:2}).then((res) => {
+        console.log(res);
+      });
+      this.$router.push("/paygo");
+      // alert("待支付")
     },
     pushrouper(path) {
       this.$router.push(path);

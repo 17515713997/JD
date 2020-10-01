@@ -21,6 +21,8 @@ const NewAddr = () => import('views/confirmOrder/childComp/newAddr')
 const Order = () => import('views/order/Order')
 //支付
 const Payment = () => import('views/order/Payment')
+
+const Paygo = () => import('views/order/paygo')
 const routes = [
   {
     path: '',
@@ -158,6 +160,13 @@ const routes = [
       title: "订单页面"
     },
     component: Order
+  },
+  {//订单
+    path: '/paygo', 
+    meta: {
+      title: "收货页面"
+    },
+    component: Paygo
   },
   {//店铺页面
     path: '/shops/:id', //暂时直接传递商品数据

@@ -123,9 +123,17 @@ export default {
   //登录后,获取自动登录码，并设置本地存储
   [types.SET_USERINFO](state, payload) {
     console.log(payload);
+    //把返回的用户信息中的收藏店铺做处理
+    if(payload.data.user.collectShop && payload.data.user.collectShop != ""){//存储有值
+      //有值,做分隔--变成数组
+        payload.data.user.collectShop = payload.data.user.collectShop.split(",");
+    }else{
+      payload.data.user.collectShop = []
+    }
     state.userInfo = {}
     for (let i in payload.data.user) {
-      state.userInfo[i] = payload.data.user[i]
+      state.userInfo[i] = payload.data.user[i];
+      console.log(state.userInfo)
     }
     state.userInfo.defaddr = payload.data.defaddr
     state.ShoppingAddress = payload.data.defaddr
@@ -136,7 +144,7 @@ export default {
     window.localStorage.setItem(state.localData, JSON.stringify(data))
     //如果本地存储购物车有数据，则把购物车的数据和当前用户购物车合并，并删除本地存储的购物车
 
-    
+    console.log(state.userInfo)
     if (data.shopCart != undefined && data.shopCart.length > 0) {
       Promise.all([...data.shopCart.map(item => {
         item.user_id = state.userInfo.id
